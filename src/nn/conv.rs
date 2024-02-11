@@ -1,6 +1,6 @@
 use crate::nn::NeuralNetwork;
 
-struct Conv {
+pub struct Conv {   
 }
 
 impl NeuralNetwork for Conv {
