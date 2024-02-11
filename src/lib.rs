@@ -1,4 +1,5 @@
 mod activation;
+mod layer;
 
 use activation::{relu, sigm};
 
