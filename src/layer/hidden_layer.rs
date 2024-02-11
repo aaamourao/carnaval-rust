@@ -21,11 +21,15 @@ impl Layer for HiddenLayer {
         }
     }
 
-    fn initialize_weights_with_random() {
+    fn initialize_weights_with_random(&self) {
 
     }
 
-    fn get_layer_type() -> LayerType {
+    fn get_layer_type(&self) -> LayerType {
         LayerType::Hidden
+    }
+
+    fn get_activation_function(&self) -> ActivationFunctionType {
+        self.activation_function
     }
 }

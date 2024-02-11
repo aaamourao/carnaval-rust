@@ -20,11 +20,15 @@ impl Layer for InputLayer {
         }
     }
 
-    fn initialize_weights_with_random() {
+    fn initialize_weights_with_random(&self) {
         // Do nothing... input layer does not modify the input
     }
 
-    fn get_layer_type() -> LayerType {
+    fn get_layer_type(&self) -> LayerType {
         LayerType::Input
+    }
+
+    fn get_activation_function(&self) -> ActivationFunctionType {
+        self.activation_function
     }
 }

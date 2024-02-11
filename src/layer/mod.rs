@@ -13,7 +13,9 @@ pub trait Layer {
     fn new(depth: usize, height: usize, weight: usize) -> Self;
 
     // For now, there is only one way of initializing weights
-    fn initialize_weights_with_random();
+    fn initialize_weights_with_random(&self);
 
-    fn get_layer_type() -> LayerType;
+    fn get_layer_type(&self) -> LayerType;
+
+    fn get_activation_function(&self) -> ActivationFunctionType;
 }
