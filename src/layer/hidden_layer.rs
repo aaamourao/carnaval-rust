@@ -6,12 +6,12 @@ pub struct HiddenLayer {
     height: usize,
     width: usize,
     depth: usize,
-    weights: Array::<f64, Ix3>,
+    weights: Array<f64, Ix3>,
     activation_function: ActivationFunctionType,
 }
 
-impl Layer for HiddenLayer {
-    fn new(depth: usize, height: usize, width: usize) -> Self {
+impl HiddenLayer {
+    pub fn new(depth: usize, height: usize, width: usize) -> Self {
         HiddenLayer {
             height,
             width,
@@ -20,7 +20,9 @@ impl Layer for HiddenLayer {
             activation_function: ActivationFunctionType::Relu
         }
     }
+}
 
+impl Layer for HiddenLayer {
     fn initialize_weights_with_random(&self) {
 
     }

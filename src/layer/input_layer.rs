@@ -6,11 +6,12 @@ pub struct InputLayer {
     height: usize,
     width: usize,
     depth: usize,
-    weights: Array::<f64, Ix3>,
+    weights: Array<f64, Ix3>,
     activation_function: ActivationFunctionType,
 }
-impl Layer for InputLayer {
-    fn new(depth: usize, height: usize,width: usize) -> Self {
+
+impl InputLayer {
+    pub fn new(depth: usize, height: usize,width: usize) -> Self {
         InputLayer {
             height,
             width,
@@ -19,6 +20,8 @@ impl Layer for InputLayer {
             activation_function: ActivationFunctionType::None,
         }
     }
+}
+impl Layer for InputLayer {
 
     fn initialize_weights_with_random(&self) {
         // Do nothing... input layer does not modify the input

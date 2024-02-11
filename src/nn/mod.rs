@@ -1,5 +1,7 @@
+use ndarray::{Array, Ix3};
+
 mod conv;
 
 pub trait NeuralNetwork {
-    fn new(layers_size: usize, input_dim: (usize, usize, usize)) -> Self;
+    fn forward(input: Array<f64, Ix3>,) -> Array<f64, Ix3>;
 }

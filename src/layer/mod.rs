@@ -1,7 +1,7 @@
 use crate::activation::ActivationFunctionType;
 
 pub mod input_layer;
-mod hidden_layer;
+pub mod hidden_layer;
 
 pub enum LayerType {
     Input,
@@ -10,8 +10,6 @@ pub enum LayerType {
 }
 
 pub trait Layer {
-    fn new(depth: usize, height: usize, weight: usize) -> Self;
-
     // For now, there is only one way of initializing weights
     fn initialize_weights_with_random(&self);
 
