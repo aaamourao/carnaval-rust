@@ -1,23 +1,28 @@
+use ndarray::{Array, Ix3};
 use crate::activation::ActivationFunctionType;
 use crate::layer::{Layer, LayerType};
 
-struct HiddenLayer {
-    length: usize,
-    weights: Vec<f64>,
+pub struct HiddenLayer {
+    height: usize,
+    width: usize,
+    depth: usize,
+    weights: Array::<f64, Ix3>,
     activation_function: ActivationFunctionType,
 }
 
 impl Layer for HiddenLayer {
-    fn new(length: usize) -> Self {
+    fn new(depth: usize, height: usize, width: usize) -> Self {
         HiddenLayer {
-            length,
-            weights: vec![1.0, length],
+            height,
+            width,
+            depth,
+            weights: Array::ones((depth, height, width)),
             activation_function: ActivationFunctionType::Relu
         }
     }
 
-    fn initialize_weights() {
-        todo!()
+    fn initialize_weights_with_random() {
+
     }
 
     fn get_layer_type() -> LayerType {

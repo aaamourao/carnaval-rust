@@ -8,7 +8,7 @@ pub enum ActivationFunctionType {
     Relu,
 }
 
-pub fn sigm(x: f64) -> f64 {
+pub fn sigmoid(x: f64) -> f64 {
     let minus_x = -x;
     1.0 / (1.0 + minus_x.exp())
 }

@@ -1,21 +1,26 @@
+use ndarray::{Array, Ix3};
 use crate::activation::ActivationFunctionType;
 use crate::layer::{Layer, LayerType};
 
-struct InputLayer {
-    length: usize,
-    weights: Vec<f64>,
+pub struct InputLayer {
+    height: usize,
+    width: usize,
+    depth: usize,
+    weights: Array::<f64, Ix3>,
     activation_function: ActivationFunctionType,
 }
 impl Layer for InputLayer {
-    fn new(length: usize) -> Self {
+    fn new(depth: usize, height: usize,width: usize) -> Self {
         InputLayer {
-            length,
-            weights: vec![1.0, length],
+            height,
+            width,
+            depth,
+            weights: Array::ones((depth, height, width)),
             activation_function: ActivationFunctionType::None,
         }
     }
 
-    fn initialize_weights() {
+    fn initialize_weights_with_random() {
         // Do nothing... input layer does not modify the input
     }
 

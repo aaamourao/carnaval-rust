@@ -3,17 +3,17 @@ use crate::activation::ActivationFunctionType;
 pub mod input_layer;
 mod hidden_layer;
 
-enum LayerType {
+pub enum LayerType {
     Input,
     Hidden,
     Output
 }
 
-trait Layer {
-    fn new(length: usize) -> Self;
+pub trait Layer {
+    fn new(depth: usize, height: usize, weight: usize) -> Self;
 
     // For now, there is only one way of initializing weights
-    fn initialize_weights();
+    fn initialize_weights_with_random();
 
     fn get_layer_type() -> LayerType;
 }

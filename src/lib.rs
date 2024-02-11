@@ -1,7 +1,8 @@
 mod activation;
 mod layer;
+mod nn;
 
-use activation::{relu, sigm};
+use activation::{relu, sigmoid};
 
 #[cfg(test)]
 mod tests {
@@ -17,9 +18,9 @@ mod tests {
 
     #[test]
     fn sigm_works() {
-        let result = sigm(0.0);
-        let result_6 = sigm(6.0);
-        let result_minus_6 = sigm(-6.0);
+        let result = sigmoid(0.0);
+        let result_6 = sigmoid(6.0);
+        let result_minus_6 = sigmoid(-6.0);
         assert_eq!(result, 0.5);
         assert_eq!(result_6, 0.9975273768433653);
         assert_eq!(result_minus_6, 0.0024726231566347743);
