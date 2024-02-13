@@ -3,7 +3,7 @@ use ndarray::{Array, Ix3};
 use crate::layer::hidden_layer::HiddenLayer;
 use crate::layer::input_layer::InputLayer;
 use crate::layer::Layer;
-use crate::nn::NeuralNetwork;
+use crate::model::Model;
 
 pub struct FullyConnected {
     pub layers: Vec<Box<dyn Layer>>,
@@ -33,7 +33,7 @@ impl FullyConnected {
     }
 }
 
-impl NeuralNetwork for FullyConnected {
+impl Model for FullyConnected {
     fn forward(&self, input: Array<f64, Ix3>) -> Array<f64, Ix3> {
         let mut current = input;
 

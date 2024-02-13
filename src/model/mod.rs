@@ -2,6 +2,6 @@ use ndarray::{Array, Ix3};
 
 pub mod fully_connected;
 
-pub trait NeuralNetwork {
+pub trait Model {
     fn forward(&self, input: Array<f64, Ix3>,) -> Array<f64, Ix3>;
 }

@@ -1,6 +1,6 @@
 mod activation;
 mod layer;
-mod nn;
+mod model;
 
 #[cfg(test)]
 mod tests {
@@ -10,7 +10,7 @@ mod tests {
     use crate::layer::hidden_layer::HiddenLayer;
     use crate::layer::input_layer::InputLayer;
     use crate::layer::Layer;
-    use crate::nn::fully_connected::FullyConnected;
+    use crate::model::fully_connected::FullyConnected;
 
     #[test]
     fn relu_works() {
@@ -84,10 +84,11 @@ mod tests {
         let input= array![[[10.], [20.], [-20.], [-40.], [-3.]]];
         println!["{:?}", input.shape()];
         // let test0 = input.mul(array![])
-        let test0 = array![[[0.73, 0.2]]];
+        let test0 = array![[[1., 0., 0.]]];
         println!["{:?}", test0.shape()];
         let test1 = input.mul(test0);
-        //let result = nn.forward(array![[[10.]], [[20.]], [[-20.]], [[-40.]], [[-3.]]]);
+        println!["{:?}", test1.shape()];
+        //let result = model.forward(array![[[10.]], [[20.]], [[-20.]], [[-40.]], [[-3.]]]);
 
     }
 }
