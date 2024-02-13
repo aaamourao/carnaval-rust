@@ -60,7 +60,7 @@ mod tests {
     fn conv_works() {
         let nn = Conv::new((1, 1, 2), 1);
         for (i, layer) in nn.layers.iter().enumerate() {
-            if (i == 0) {
+            if i == 0 {
                 assert_eq!(layer.get_activation_function(), ActivationFunctionType::None);
                 let weights = layer.get_weights();
                 for value in weights.iter() {
