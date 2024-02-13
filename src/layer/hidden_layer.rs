@@ -37,4 +37,8 @@ impl Layer for HiddenLayer {
     fn get_activation_function(&self) -> ActivationFunctionType {
         self.activation_function
     }
+
+    fn get_weights(&self) -> &Array<f64, Ix3> {
+        &self.weights
+    }
 }

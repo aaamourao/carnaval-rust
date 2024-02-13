@@ -1,7 +1,7 @@
 // activation functions
 
 use std::f64;
-#[derive(Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum ActivationFunctionType {
     None,
     Sigmoid,

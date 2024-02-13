@@ -1,3 +1,4 @@
+use ndarray::{Array, Ix3};
 use crate::activation::ActivationFunctionType;
 
 pub mod input_layer;
@@ -16,4 +17,6 @@ pub trait Layer {
     fn get_layer_type(&self) -> LayerType;
 
     fn get_activation_function(&self) -> ActivationFunctionType;
+
+    fn get_weights(&self) -> &Array<f64, Ix3>;
 }
