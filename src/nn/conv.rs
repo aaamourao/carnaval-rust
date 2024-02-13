@@ -1,3 +1,4 @@
+use std::ops::Mul;
 use ndarray::{Array, Ix3};
 use crate::layer::hidden_layer::HiddenLayer;
 use crate::layer::input_layer::InputLayer;
@@ -33,8 +34,13 @@ impl Conv {
 }
 
 impl NeuralNetwork for Conv {
-    fn forward(input: Array<f64, Ix3>) -> Array<f64, Ix3> {
-        println!["{:?}", input];
-        input
+    fn forward(&self, input: Array<f64, Ix3>) -> Array<f64, Ix3> {
+        let mut current = input;
+
+        for layer in self.layers.iter() { ;
+            current = current.mul(layer.get_weights());
+        }
+
+        return current
     }
 }
