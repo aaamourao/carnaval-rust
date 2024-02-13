@@ -7,6 +7,7 @@ use activation::{relu, sigmoid};
 #[cfg(test)]
 mod tests {
     use crate::layer::hidden_layer::HiddenLayer;
+    use crate::layer::input_layer::InputLayer;
     use crate::layer::Layer;
     use super::*;
 
@@ -33,5 +34,14 @@ mod tests {
         let mut layer = HiddenLayer::new(1, 1, 2);
         layer.initialize_weights_with_random();
         println!["{:?}", layer.weights];
+    }
+
+    #[test]
+    fn input_layer_works() {
+        let mut layer = InputLayer::new(1, 1, 2);
+        layer.initialize_weights_with_random(); // does nothing
+        for value in layer.weights.iter() {
+            assert_eq!(value, &1.0_f64);
+        }
     }
 }

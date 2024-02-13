@@ -5,9 +5,9 @@ use crate::activation::ActivationFunctionType;
 use crate::layer::{Layer, LayerType};
 
 pub struct HiddenLayer {
-    pub height: usize,
-    pub width: usize,
-    pub depth: usize,
+    height: usize,
+    width: usize,
+    depth: usize,
     pub weights: Array<f64, Ix3>,
     activation_function: ActivationFunctionType,
 }
