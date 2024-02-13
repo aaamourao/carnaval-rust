@@ -4,11 +4,13 @@ mod nn;
 
 #[cfg(test)]
 mod tests {
+    use std::ops::Mul;
+    use ndarray::array;
     use crate::activation::{ActivationFunctionType, relu, sigmoid};
     use crate::layer::hidden_layer::HiddenLayer;
     use crate::layer::input_layer::InputLayer;
     use crate::layer::Layer;
-    use crate::nn::conv::Conv;
+    use crate::nn::fully_connected::FullyConnected;
 
     #[test]
     fn relu_works() {
@@ -58,7 +60,7 @@ mod tests {
 
     #[test]
     fn conv_works() {
-        let nn = Conv::new((1, 1, 2), 1);
+        let nn = FullyConnected::new((1, 1, 2), 1);
         for (i, layer) in nn.layers.iter().enumerate() {
             if i == 0 {
                 assert_eq!(layer.get_activation_function(), ActivationFunctionType::None);
@@ -70,5 +72,22 @@ mod tests {
                 assert_eq!(layer.get_activation_function(), ActivationFunctionType::Relu);
             }
         }
+    }
+
+    #[test]
+    fn conv_forward() {
+        let mut nn = FullyConnected::new((1, 1, 3), 2);
+        assert_eq!(nn.layers.len(), 2);
+        nn.layers.last_mut().unwrap().initialize_weights_with_values(array![[
+            [0.73, 0.2]
+        ]]);
+        let input= array![[[10.], [20.], [-20.], [-40.], [-3.]]];
+        println!["{:?}", input.shape()];
+        // let test0 = input.mul(array![])
+        let test0 = array![[[0.73, 0.2]]];
+        println!["{:?}", test0.shape()];
+        let test1 = input.mul(test0);
+        //let result = nn.forward(array![[[10.]], [[20.]], [[-20.]], [[-40.]], [[-3.]]]);
+
     }
 }

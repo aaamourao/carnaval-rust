@@ -27,6 +27,9 @@ impl Layer for InputLayer {
         // Do nothing... input layer does not modify the input
     }
 
+    fn initialize_weights_with_values(&mut self, values: Array<f64, Ix3>) {
+        // Do nothing... input layer does not modify the input
+    }
     fn get_layer_type(&self) -> LayerType {
         LayerType::Input
     }

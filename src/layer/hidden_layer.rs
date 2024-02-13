@@ -30,6 +30,9 @@ impl Layer for HiddenLayer {
                                      Uniform::new(0.0, 1.0));
     }
 
+    fn initialize_weights_with_values(&mut self, values: Array<f64, Ix3>) {
+        self.weights = values;
+    }
     fn get_layer_type(&self) -> LayerType {
         LayerType::Hidden
     }

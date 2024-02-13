@@ -5,11 +5,11 @@ use crate::layer::input_layer::InputLayer;
 use crate::layer::Layer;
 use crate::nn::NeuralNetwork;
 
-pub struct Conv {
+pub struct FullyConnected {
     pub layers: Vec<Box<dyn Layer>>,
 }
 
-impl Conv {
+impl FullyConnected {
     pub fn new(input_dim: (usize, usize, usize), output_height: usize) -> Self {
         let (mut input_depth, input_height, input_width) = input_dim;
 
@@ -27,13 +27,13 @@ impl Conv {
             conv_layers.push(Box::new(HiddenLayer::new(input_depth, input_height, input_width)));
         }
 
-        Conv {
+        FullyConnected {
             layers: conv_layers,
         }
     }
 }
 
-impl NeuralNetwork for Conv {
+impl NeuralNetwork for FullyConnected {
     fn forward(&self, input: Array<f64, Ix3>) -> Array<f64, Ix3> {
         let mut current = input;
 

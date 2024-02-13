@@ -14,6 +14,8 @@ pub trait Layer {
     // For now, there is only one way of initializing weights
     fn initialize_weights_with_random(&mut self);
 
+    fn initialize_weights_with_values(&mut self, values: Array<f64, Ix3>);
+
     fn get_layer_type(&self) -> LayerType;
 
     fn get_activation_function(&self) -> ActivationFunctionType;
