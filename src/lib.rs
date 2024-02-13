@@ -10,7 +10,7 @@ mod tests {
     use crate::layer::hidden_layer::HiddenLayer;
     use crate::layer::input_layer::InputLayer;
     use crate::layer::Layer;
-    use crate::model::fully_connected::FullyConnected;
+    use crate::model::dense::Dense;
 
     #[test]
     fn relu_works() {
@@ -59,8 +59,8 @@ mod tests {
     }
 
     #[test]
-    fn conv_works() {
-        let nn = FullyConnected::new((1, 1, 2), 1);
+    fn dense_works() {
+        let nn = Dense::new((1, 1, 2), 1);
         for (i, layer) in nn.layers.iter().enumerate() {
             if i == 0 {
                 assert_eq!(layer.get_activation_function(), ActivationFunctionType::None);
@@ -75,8 +75,8 @@ mod tests {
     }
 
     #[test]
-    fn conv_forward() {
-        let mut nn = FullyConnected::new((1, 1, 3), 2);
+    fn dense_forward() {
+        let mut nn = Dense::new((1, 1, 3), 2);
         assert_eq!(nn.layers.len(), 2);
         nn.layers.last_mut().unwrap().initialize_weights_with_values(array![[
             [0.73, 0.2]

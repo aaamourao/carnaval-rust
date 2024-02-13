@@ -5,11 +5,11 @@ use crate::layer::input_layer::InputLayer;
 use crate::layer::Layer;
 use crate::model::Model;
 
-pub struct FullyConnected {
+pub struct Dense {
     pub layers: Vec<Box<dyn Layer>>,
 }
 
-impl FullyConnected {
+impl Dense {
     pub fn new(input_dim: (usize, usize, usize), output_height: usize) -> Self {
         let (mut input_depth, input_height, input_width) = input_dim;
 
@@ -19,21 +19,21 @@ impl FullyConnected {
             output_height - input_height
         };
 
-        let mut conv_layers: Vec<Box<dyn Layer>> = Vec::with_capacity(layers_size);
-        conv_layers.push(Box::new(InputLayer::new(input_depth, input_height, input_width)));
+        let mut dense_layers: Vec<Box<dyn Layer>> = Vec::with_capacity(layers_size);
+        dense_layers.push(Box::new(InputLayer::new(input_depth, input_height, input_width)));
 
         while input_depth > 0 {
             input_depth -= 1;
-            conv_layers.push(Box::new(HiddenLayer::new(input_depth, input_height, input_width)));
+            dense_layers.push(Box::new(HiddenLayer::new(input_depth, input_height, input_width)));
         }
 
-        FullyConnected {
-            layers: conv_layers,
+        Dense {
+            layers: dense_layers,
         }
     }
 }
 
-impl Model for FullyConnected {
+impl Model for Dense {
     fn forward(&self, input: Array<f64, Ix3>) -> Array<f64, Ix3> {
         let mut current = input;
 
