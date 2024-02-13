@@ -3,10 +3,10 @@ use crate::activation::ActivationFunctionType;
 use crate::layer::{Layer, LayerType};
 
 pub struct InputLayer {
-    height: usize,
-    width: usize,
-    depth: usize,
-    weights: Array<f64, Ix3>,
+    pub height: usize,
+    pub width: usize,
+    pub depth: usize,
+    pub weights: Array<f64, Ix3>,
     activation_function: ActivationFunctionType,
 }
 

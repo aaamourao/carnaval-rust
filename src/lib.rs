@@ -32,6 +32,6 @@ mod tests {
     fn hidden_layer_works() {
         let mut layer = HiddenLayer::new(1, 1, 2);
         layer.initialize_weights_with_random();
-        println!["{:?}", layer];
+        println!["{:?}", layer.weights];
     }
 }
