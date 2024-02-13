@@ -1,7 +1,6 @@
 // activation functions
 
 use std::f64;
-
 #[derive(Copy, Clone)]
 pub enum ActivationFunctionType {
     None,
