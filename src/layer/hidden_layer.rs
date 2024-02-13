@@ -1,4 +1,6 @@
 use ndarray::{Array, Ix3};
+use ndarray_rand::RandomExt;
+use rand::distributions::Uniform;
 use crate::activation::ActivationFunctionType;
 use crate::layer::{Layer, LayerType};
 
@@ -23,8 +25,9 @@ impl HiddenLayer {
 }
 
 impl Layer for HiddenLayer {
-    fn initialize_weights_with_random(&self) {
-
+    fn initialize_weights_with_random(&mut self) {
+        self.weights = Array::random((self.depth, self.height, self.width),
+                                     Uniform::new(0.0, 1.0));
     }
 
     fn get_layer_type(&self) -> LayerType {

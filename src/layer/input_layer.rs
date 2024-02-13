@@ -23,7 +23,7 @@ impl InputLayer {
 }
 impl Layer for InputLayer {
 
-    fn initialize_weights_with_random(&self) {
+    fn initialize_weights_with_random(&mut self) {
         // Do nothing... input layer does not modify the input
     }
 

@@ -11,7 +11,7 @@ pub enum LayerType {
 
 pub trait Layer {
     // For now, there is only one way of initializing weights
-    fn initialize_weights_with_random(&self);
+    fn initialize_weights_with_random(&mut self);
 
     fn get_layer_type(&self) -> LayerType;
 
