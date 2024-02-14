@@ -7,6 +7,7 @@ use crate::layer::{Layer, LayerType};
 
 pub struct Dense {
     pub nn_layers: Vec<Array<f64, Ix3>>,
+    pub bias: Vec<Array<f64, Ix3>>,
     pub activation_function: ActivationFunctionType,
 }
 
