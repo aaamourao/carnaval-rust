@@ -23,19 +23,22 @@ impl Dense {
             output_height - input_height
         };
 
-        let mut dense_layers: Vec<Array<f64, Ix3>> = Vec::with_capacity(layers_size);
+        let mut nn_layers: Vec<Array<f64, Ix3>> = Vec::with_capacity(layers_size);
 
         // layers size is usize, so we need to increment it in order
         // to add the correct number of layers
         layers_size += 1;
         while layers_size > 0 {
-            dense_layers.push(Array::random((input_depth, input_height, input_width),
-                                            Uniform::new(0.0, 1.0)));
+            nn_layers.push(Array::random((input_depth, input_height, input_width),
+                                         Uniform::new(0.0, 1.0)));
            layers_size -= 1;
         }
 
+        let bias = vec![Array::zeros((input_depth, 1, input_width))];
+
         Dense {
-            nn_layers: dense_layers,
+            nn_layers,
+            bias,
             activation_function: activation_function.unwrap_or(ActivationFunctionType::Relu),
         }
     }
