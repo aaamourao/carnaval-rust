@@ -31,7 +31,8 @@ mod tests {
 
     #[test]
     fn dense_works() {
-        let nn = Dense::new(2, 1, None);
+        let nn = Dense::new(2
+                            , 1, None);
         assert_eq!(nn.get_activation_function(), ActivationFunctionType::Relu);
         for weight in nn.layers.iter() {
             assert_le!(weight, &1.0_f64);

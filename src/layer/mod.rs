@@ -7,6 +7,10 @@ pub enum LayerType {
     Dense,
 }
 
+pub enum ForwardError {
+    IncorrectDimensions(String),
+}
+
 pub trait Layer {
     // For now, there is only one way of initializing weights
     // fn initialize_weights_with_values<T>(&mut self, values: T);
@@ -15,5 +19,5 @@ pub trait Layer {
 
     fn get_activation_function(&self) -> ActivationFunctionType;
 
-    fn forward(&self, input: Array<f64, Ix3>,) -> Array<f64, Ix3>;
+    fn forward(&self, input: Array<f64, Ix3>,) -> Result<Array<f64, Ix3>, ForwardError>;
 }

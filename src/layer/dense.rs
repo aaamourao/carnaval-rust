@@ -3,7 +3,7 @@ use ndarray::{Array, Ix3};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
 use crate::activation::ActivationFunctionType;
-use crate::layer::{Layer, LayerType};
+use crate::layer::{ForwardError, Layer, LayerType};
 
 pub struct Dense {
     pub layers: Array<f64, Ix3>,
@@ -36,7 +36,15 @@ impl Layer for Dense {
         return self.activation_function
     }
 
-    fn forward(&self, input: Array<f64, Ix3>) -> Array<f64, Ix3> {
-        (&self.layers * &input) + &self.bias
+    fn forward(&self, input: Array<f64, Ix3>) -> Result<Array<f64, Ix3>, ForwardError> {
+        let input_dim = input.shape();
+        let result = if input_dim[0] != 1 && input_dim[2] != 1 {
+            Err(ForwardError::IncorrectDimensions(
+                "input should have dimensions (1, x, 1)".to_string()
+            ))
+        } else {
+            Ok((&self.layers * &input) + &self.bias)
+        };
+        return result
     }
 }
