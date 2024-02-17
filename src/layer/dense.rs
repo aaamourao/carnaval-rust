@@ -37,13 +37,13 @@ impl Layer for Dense {
     }
 
     fn forward(&self, input: Array<f64, Ix3>) -> Result<Array<f64, Ix3>, ForwardError> {
-        let input_dim = input.shape();
-        let result = if input_dim[0] != 1 && input_dim[2] != 1 {
+        let input_size = input.shape();
+        let result = if input_size[0] != 1 && input_size[1] != 1 {
             Err(ForwardError::IncorrectDimensions(
-                "input should have dimensions (1, x, 1)".to_string()
+                "input should have dimensions (1, 1, input_size)".to_string()
             ))
         } else {
-            Ok((&self.layers * &input) + &self.bias)
+            Ok((input * &self.layers * &input) + &self.bias)
         };
         return result
     }
