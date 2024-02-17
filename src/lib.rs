@@ -31,13 +31,11 @@ mod tests {
 
     #[test]
     fn dense_works() {
-        let nn = Dense::new((1, 1, 2), 1, None);
+        let nn = Dense::new(2, 1, None);
         assert_eq!(nn.get_activation_function(), ActivationFunctionType::Relu);
-        for weights in nn.nn_layers.iter() {
-            for value in weights.iter() {
-                assert_le!(value, &1.0_f64);
-                assert_ge!(value, &0.0_f64);
-            }
+        for weight in nn.layers.iter() {
+            assert_le!(weight, &1.0_f64);
+            assert_ge!(weight, &0.0_f64);
         }
     }
 
