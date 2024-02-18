@@ -4,3 +4,6 @@
 
 # rust
 target/
+
+#plotpy
+plots/
