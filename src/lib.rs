@@ -6,7 +6,7 @@ mod model;
 mod tests {
     use std::ops::Mul;
     use more_asserts::{assert_ge, assert_le};
-    use ndarray::array;
+    use ndarray::{array, Axis, s};
     use crate::activation::{ActivationFunctionType, relu, sigmoid};
     use crate::layer::Layer;
     use crate::layer::dense::Dense;
@@ -42,6 +42,5 @@ mod tests {
 
     #[test]
     fn dense_forward() {
-
     }
 }
