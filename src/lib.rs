@@ -41,15 +41,15 @@ mod tests {
 
     #[test]
     fn dense_forward() {
-        let nn = Dense::new(2, 4, None);
+        let nn = Dense::new(2, 2, None);
         for weight in &nn.layers {
             println!("weight: {weight}");
         }
-        let inference_result = &nn.forward(array![[[2.], [2.]]]);
+        let inference_result = &nn.forward(array![[[1.], [1.]]]);
 
         if inference_result.is_ok() {
-            for value in inference_result.as_ref().unwrap() {
-                println!["value multiplied by 0.2: {value}"]
+            for (row, value) in inference_result.as_ref().unwrap().iter().enumerate() {
+                println!["value multiplied by 1.0 + bias({:?}): {value}", nn.bias[[0, row, 0]]]
             }
         }
     }

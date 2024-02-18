@@ -48,8 +48,7 @@ impl Layer for Dense {
             let mut current_result = Array3::<f64>::zeros((1, self.output_size, 1));
 
             let layer_closure = |layer: &ArrayView<f64, Ix2>, row: usize| -> f64 {
-                //(layer * input.slice(s![0, .., ..])) + self.bias[[0, row, 0]]
-                ((layer * &input.index_axis(Axis(0), 0)) + self.bias[[0, row, 0]])[[0, 0]]
+                ((layer.dot(&input.index_axis(Axis(0), 0))) + self.bias[[0, row, 0]])[[0, 0]]
             };
 
             let mut row: usize = 0;
