@@ -12,13 +12,19 @@ pub struct Dense {
     pub activation_function: ActivationFunctionType,
 }
 
+/*
+ * Dense handles 2D data, but its input is Ix3 arrays in order to be compatible with other layers
+ * types
+ */
 impl Dense {
     pub fn new(input_size: usize,
                output_size: usize,
                activation_function: Option<ActivationFunctionType>) -> Self {
 
-        let layers = Array::random((1, output_size, input_size), Uniform::new(0.0, 1.0));
-        let bias = Array::random((1, output_size, 1), Uniform::new(0.0, 1.0));
+        let layers = Array::random((1, output_size, input_size),
+                                   Uniform::new(0.0, 1.0));
+        let bias = Array::random((1, output_size, 1),
+                                 Uniform::new(0.0, 1.0));
 
         Dense {
             input_size,
@@ -46,7 +52,8 @@ impl Layer for Dense {
             ))
         } else {
 
-            let partial_result = &self.weights.index_axis(Axis(0), 0).dot(&input.index_axis(Axis(0), 0)) + &self.bias;
+            let partial_result = &self.weights.index_axis(Axis(0), 0).dot(
+                &input.index_axis(Axis(0), 0)) + &self.bias;
 
             let result = match self.activation_function {
                 ActivationFunctionType::Relu => partial_result.map(|x| relu(x)),
