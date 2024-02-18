@@ -1,3 +1,4 @@
+use std::ops::{Index, Mul};
 use ndarray::{Array, Array3, ArrayView, Axis, Ix2, Ix3};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
@@ -7,7 +8,7 @@ use crate::layer::{ForwardError, Layer, LayerType};
 pub struct Dense {
     pub input_size: usize,
     pub output_size: usize,
-    pub layers: Array<f64, Ix3>,
+    pub weights: Array<f64, Ix3>,
     pub bias: Array<f64, Ix3>,
     pub activation_function: ActivationFunctionType,
 }
@@ -23,7 +24,7 @@ impl Dense {
         Dense {
             input_size,
             output_size,
-            layers,
+            weights: layers,
             bias,
             activation_function: activation_function.unwrap_or(ActivationFunctionType::None),
         }
@@ -45,23 +46,15 @@ impl Layer for Dense {
                 "input should have dimensions (1, input_size, 1)".to_string()
             ))
         } else {
-            let mut current_result = Array3::<f64>::zeros((1, self.output_size, 1));
 
-            let layer_closure = |layer: &ArrayView<f64, Ix2>, row: usize| -> f64 {
-                ((layer.dot(&input.index_axis(Axis(0), 0))) + self.bias[[0, row, 0]])[[0, 0]]
+            let partial_result = &self.weights.index_axis(Axis(0), 0).dot(&input.index_axis(Axis(0), 0)) + &self.bias;
+
+            let result = match self.activation_function {
+                ActivationFunctionType::Relu => partial_result.map(|x| relu(x)),
+                ActivationFunctionType::Sigmoid => partial_result.map(|x| sigmoid(x)),
+                _ => partial_result,
             };
-
-            let mut row: usize = 0;
-
-            for layer in self.layers.axis_iter(Axis(1)) {
-                current_result[[0, row, 0]] = match self.activation_function {
-                    ActivationFunctionType::Relu => relu(layer_closure(&layer, row)),
-                    ActivationFunctionType::Sigmoid => sigmoid(layer_closure(&layer, row)),
-                    _ => layer_closure(&layer, row),
-                };
-                row += 1;
-            }
-            Ok(current_result)
+            Ok(result)
         };
         return result
     }

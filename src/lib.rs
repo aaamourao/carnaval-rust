@@ -13,17 +13,17 @@ mod tests {
 
     #[test]
     fn relu_works() {
-        let result = relu(-2.0);
-        let result_bigger_than_0 = relu(3.0);
+        let result = relu(&-2.0);
+        let result_bigger_than_0 = relu(&3.0);
         assert_eq!(result, 0.0);
         assert_eq!(result_bigger_than_0, 3.0);
     }
 
     #[test]
     fn sigmoid_works() {
-        let result = sigmoid(0.0);
-        let result_6 = sigmoid(6.0);
-        let result_minus_6 = sigmoid(-6.0);
+        let result = sigmoid(&0.0);
+        let result_6 = sigmoid(&6.0);
+        let result_minus_6 = sigmoid(&-6.0);
         assert_eq!(result, 0.5);
         assert_eq!(result_6, 0.9975273768433653);
         assert_eq!(result_minus_6, 0.0024726231566347743);
@@ -34,7 +34,7 @@ mod tests {
         let nn = Dense::new(2
                             , 1, None);
         assert_eq!(nn.get_activation_function(), ActivationFunctionType::None);
-        for weight in nn.layers.iter() {
+        for weight in nn.weights.iter() {
             assert_le!(weight, &1.0_f64);
             assert_ge!(weight, &0.0_f64);
         }
@@ -43,7 +43,7 @@ mod tests {
     #[test]
     fn dense_forward() {
         let nn = Dense::new(2, 2, None);
-        for weight in &nn.layers {
+        for weight in &nn.weights {
             println!("weight: {weight}");
         }
         let inference_result = &nn.forward(&array![[[1.], [1.]]]);
@@ -54,11 +54,11 @@ mod tests {
             }
         }
     }
-    
+
     #[test]
     fn dense_plot() {
         let nn = Dense::new(5, 5, Some(ActivationFunctionType::Sigmoid));
-        for weight in &nn.layers {
+        for weight in &nn.weights {
             println!("weight: {weight}");
         }
 
@@ -74,7 +74,7 @@ mod tests {
         curve.draw(&x.into_raw_vec(), &y.clone().into_raw_vec());
 
         let mut plot = Plot::new();
-        plot.set_title("NN with 5 hidden layers");
+        plot.set_title("NN with 5 neurons");
         plot.set_subplot(1, 1, 1)
             .set_title("Dense network test")
             .add(&curve)
