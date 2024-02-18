@@ -21,4 +21,4 @@ implemented.
 
 * Dense
 * Conv2D (in progress)
-* MaxPool
+* MaxPool (in progress)
