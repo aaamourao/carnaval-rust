@@ -1,5 +1,4 @@
-use std::ops::{Index, Mul};
-use ndarray::{Array, Array3, ArrayView, Axis, Ix2, Ix3};
+use ndarray::{Array, Axis, Ix3};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
 use crate::activation::{ActivationFunctionType, relu, sigmoid};
