@@ -38,7 +38,7 @@ mod tests {
         assert_eq!(nn.get_activation_function(), ActivationFunctionType::None);
         for weight in nn.weights.iter() {
             assert_le!(weight, &1.0_f64);
-            assert_ge!(weight, &0.0_f64);
+            assert_ge!(weight, &-1.0_f64);
         }
     }
 

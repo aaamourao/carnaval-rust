@@ -2,6 +2,7 @@ use ndarray::{Array, Ix3};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
 use crate::activation::ActivationFunctionType;
+use crate::layer::{Layer, LayerError, LayerType};
 
 pub struct Conv2D {
     pub filter_dim: (usize, usize),
@@ -20,6 +21,7 @@ impl Conv2D {
                strides: Option<(usize, usize)>,
                dilation_rate: Option<(usize, usize)>,
                activation_function_type: Option<ActivationFunctionType>) -> Self {
+        // TODO: kernel_size is not the only parameter that should be checked
         if kernel_size < 1 {
             panic!["kernel_size should be at least 1"];
         }
@@ -33,6 +35,20 @@ impl Conv2D {
             dilatation_rate: dilation_rate.unwrap_or((1, 1)),
             activation_function: activation_function_type.unwrap_or(ActivationFunctionType::None),
         }
+    }
+}
+
+impl Layer for Conv2D {
+    fn get_layer_type(&self) -> LayerType {
+        LayerType::Conv2D
+    }
+
+    fn get_activation_function(&self) -> ActivationFunctionType {
+        self.activation_function
+    }
+
+    fn forward(&self, input: &Array<f64, Ix3>) -> Result<Array<f64, Ix3>, LayerError> {
+        todo!()
     }
 }
 

@@ -6,6 +6,10 @@ pub mod conv2d;
 
 pub enum LayerType {
     Dense,
+    Conv2D,
+    MaxPool,
+    Flatten,
+    Dropout,
 }
 
 #[derive(Debug)]
