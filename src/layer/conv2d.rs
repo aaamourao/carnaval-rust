@@ -5,19 +5,22 @@ use crate::activation::ActivationFunctionType;
 use crate::layer::{Layer, LayerError, LayerType};
 
 pub struct Conv2D {
-    pub filters: usize,
-    pub kernel_size: usize,
-    pub kernels: Vec<Array<f64, Ix3>>,
-    pub is_padding_enabled: bool,
-    pub strides: (usize, usize),
-    pub dilatation_rate: (usize, usize),
-    pub activation_function: ActivationFunctionType,
+    filters: usize,
+    kernel_size: usize,
+    kernels: Vec<Array<f64, Ix3>>,
+    padding: (usize, usize),
+    input_dim: (usize, usize),
+    output_dim: (usize, usize),
+    strides: (usize, usize),
+    dilatation_rate: (usize, usize),
+    activation_function: ActivationFunctionType,
 }
 
 impl Conv2D {
     pub fn new(filters: usize,
                kernel_size: usize,
-               is_padding_enabled: Option<bool>,
+               input_dim: (usize, usize),
+               padding: Option<(usize, usize)>,
                strides: Option<(usize, usize)>,
                dilation_rate: Option<(usize, usize)>,
                activation_function_type: Option<ActivationFunctionType>) -> Self {
@@ -26,14 +29,22 @@ impl Conv2D {
             panic!["kernel_size should be at least 1"];
         }
 
+        let padding = padding.unwrap_or((0, 0));
+        let dilatation_rate = dilation_rate.unwrap_or((1, 1));
+        let strides = strides.unwrap_or((1, 1));
+        let activation_function =
+            activation_function_type.unwrap_or(ActivationFunctionType::None);
+
         Conv2D {
             filters,
             kernel_size,
-            is_padding_enabled: is_padding_enabled.unwrap_or(true),
             kernels: populate_kernels_with_random(kernel_size, filters),
-            strides: strides.unwrap_or((1, 1)),
-            dilatation_rate: dilation_rate.unwrap_or((1, 1)),
-            activation_function: activation_function_type.unwrap_or(ActivationFunctionType::None),
+            padding,
+            input_dim,
+            output_dim: get_output_dim(input_dim, padding, kernel_size, dilatation_rate, strides),
+            strides,
+            dilatation_rate,
+            activation_function,
         }
     }
 }
@@ -66,4 +77,26 @@ fn populate_kernels_with_random(kernel_size: usize, filters: usize)
     }
 
     return kernels
+}
+
+fn add_padding(input: &mut Array<f64, Ix3>, kernel_size: &usize) -> Array<f64, Ix3> {
+    todo!()
+}
+
+fn get_output_dim(input_dim: (usize, usize),
+                  padding: (usize, usize),
+                  kernel_size: usize,
+                  dilatation_rate: (usize, usize),
+                  strides: (usize, usize)) -> (usize, usize) {
+    let (input_height, input_width) = input_dim;
+    let (padding_height, padding_width) = padding;
+    let (dilatation_height, dilatation_width) = dilatation_rate;
+    let (stride_height, stride_width) = strides;
+
+    let height = 1 + (input_height + 2 * padding_height - kernel_size - (kernel_size - 1)
+        * (dilatation_height - 1)) / stride_height;
+    let width = 1 + (input_width + 2 * padding_width - kernel_size - (kernel_size - 1)
+        * (dilatation_width - 1)) / stride_width;
+
+    (height, width)
 }
