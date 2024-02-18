@@ -47,6 +47,7 @@ fn populate_kernels_with_random(kernel_size: usize, filter_dim: (usize, usize))
     let mut i: usize = kernel_size;
     while i > 1 {
         kernels.push(initial_filter.clone());
+        i -= 1;
     }
 
     return kernels
