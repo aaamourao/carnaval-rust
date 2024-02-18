@@ -9,7 +9,7 @@ pub enum LayerType {
 }
 
 #[derive(Debug)]
-pub enum ForwardError {
+pub enum LayerError {
     IncorrectDimensions(String),
 }
 
@@ -21,5 +21,5 @@ pub trait Layer {
 
     fn get_activation_function(&self) -> ActivationFunctionType;
 
-    fn forward(&self, input: &Array<f64, Ix3>,) -> Result<Array<f64, Ix3>, ForwardError>;
+    fn forward(&self, input: &Array<f64, Ix3>,) -> Result<Array<f64, Ix3>, LayerError>;
 }

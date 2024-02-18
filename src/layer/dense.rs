@@ -2,7 +2,7 @@ use ndarray::{Array, Axis, Ix3};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
 use crate::activation::{ActivationFunctionType, relu, sigmoid};
-use crate::layer::{ForwardError, Layer, LayerType};
+use crate::layer::{LayerError, Layer, LayerType};
 
 pub struct Dense {
     pub input_size: usize,
@@ -45,9 +45,9 @@ impl Layer for Dense {
         return self.activation_function
     }
 
-    fn forward(&self, input: &Array<f64, Ix3>) -> Result<Array<f64, Ix3>, ForwardError> {
+    fn forward(&self, input: &Array<f64, Ix3>) -> Result<Array<f64, Ix3>, LayerError> {
         let result = if input.len_of(Axis(0)) != 1 && input.len_of(Axis(2)) != 1 {
-            Err(ForwardError::IncorrectDimensions(
+            Err(LayerError::IncorrectDimensions(
                 "input should have dimensions (1, input_size, 1)".to_string()
             ))
         } else {
