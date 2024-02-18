@@ -2,6 +2,7 @@ use ndarray::{Array, Ix3};
 use crate::activation::ActivationFunctionType;
 
 pub mod dense;
+pub mod conv2d;
 
 pub enum LayerType {
     Dense,
