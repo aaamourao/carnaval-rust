@@ -15,6 +15,7 @@ dependencies = [
  "more-asserts",
  "ndarray",
  "ndarray-rand",
+ "plotpy",
  "rand",
 ]
 
@@ -114,6 +115,12 @@ dependencies = [
  "autocfg",
  "libm",
 ]
+
+[[package]]
+name = "plotpy"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "75a04eeeeb25784434138d5d7294b97a6f667cbe410a1426a13fe00ae5ca3868"
 
 [[package]]
 name = "ppv-lite86"

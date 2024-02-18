@@ -9,4 +9,8 @@ edition = "2021"
 rand = "0.8.5"
 ndarray = "0.15.6"
 ndarray-rand = "0.14.0"
+
+[dev-dependencies]
 more-asserts = "0.3.1"
+plotpy = "0.5.1"
+
