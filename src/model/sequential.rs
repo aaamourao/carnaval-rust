@@ -15,15 +15,15 @@ impl Sequential {
         }
     }
 
-    fn push_layer(&mut self, layer_name: String, layer: Box<dyn Layer>) {
+    pub fn push_layer(&mut self, layer_name: String, layer: Box<dyn Layer>) {
         self.layers.push(layer);
         self.layer_names.push(layer_name);
     }
 }
 
 impl Model for Sequential {
-    fn predict(&self, input: Array<f64, Ix3>) -> Array<f64, Ix3> {
-        let mut current = input;
+    fn predict(&self, input: &Array<f64, Ix3>) -> Array<f64, Ix3> {
+        let mut current = input.clone();
 
         for (index, layer) in self.layers.iter().enumerate() {
             let result = layer.forward(&current);
@@ -36,7 +36,7 @@ impl Model for Sequential {
         return current
     }
 
-    fn forward(&self, input: Array<f64, Ix3>, target: Array<f64, Ix2>) -> Array<f64, Ix3> {
+    fn forward(&self, input: &Array<f64, Ix3>, target: Array<f64, Ix2>) -> Array<f64, Ix3> {
         todo!()
     }
 }

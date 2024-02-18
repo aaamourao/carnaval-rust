@@ -10,6 +10,8 @@ mod tests {
     use crate::activation::{ActivationFunctionType, relu, sigmoid};
     use crate::layer::Layer;
     use crate::layer::dense::Dense;
+    use crate::model::Model;
+    use crate::model::sequential::Sequential;
 
     #[test]
     fn relu_works() {
@@ -57,7 +59,7 @@ mod tests {
 
     #[test]
     fn dense_plot() {
-        let nn = Dense::new(5, 5, Some(ActivationFunctionType::Sigmoid));
+        let nn = Dense::new(5, 5, Some(ActivationFunctionType::Relu));
         for weight in &nn.weights {
             println!("weight: {weight}");
         }
@@ -81,5 +83,34 @@ mod tests {
             .grid_labels_legend("x", "y");
 
         let result = plot.save("plots/test.svg");
+    }
+
+    #[test]
+    fn sequential_plot() {
+        let layer0 = Dense::new(1, 1, Some(ActivationFunctionType::Relu));
+        let layer1 = Dense::new(1, 1, Some(ActivationFunctionType::Relu));
+        let layer2 = Dense::new(1, 1, Some(ActivationFunctionType::Relu));
+
+        let mut nn = Sequential::new(3);
+
+        nn.push_layer("Input Layer".to_string(), Box::new(layer0));
+        nn.push_layer("Hidden Layer 0".to_string(), Box::new(layer1));
+        nn.push_layer("Hidden Layer 0".to_string(), Box::new(layer2));
+
+        let x = array![[[-0.4], [-0.2], [0.0], [0.2], [0.4]]];
+        let y = x.map(|xx| nn.predict(&array![[[xx.clone()]]])[[0, 0, 0]]);
+
+        let mut curve = Curve::new();
+        curve.set_label("y = nn.predict(x)");
+        curve.draw(&x.into_raw_vec(), &y.clone().into_raw_vec());
+
+        let mut plot = Plot::new();
+        plot.set_title("NN with 3 Dense layers");
+        plot.set_subplot(1, 1, 1)
+            .set_title("Sequential model test")
+            .add(&curve)
+            .grid_labels_legend("x", "y");
+
+        let result = plot.save("plots/test_sequential.svg");
     }
 }
