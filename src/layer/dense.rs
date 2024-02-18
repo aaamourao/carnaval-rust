@@ -25,7 +25,7 @@ impl Dense {
             output_size,
             layers,
             bias,
-            activation_function: activation_function.unwrap_or(ActivationFunctionType::Relu),
+            activation_function: activation_function.unwrap_or(ActivationFunctionType::None),
         }
     }
 }

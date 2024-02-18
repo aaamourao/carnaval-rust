@@ -7,6 +7,7 @@ pub enum LayerType {
     Dense,
 }
 
+#[derive(Debug)]
 pub enum ForwardError {
     IncorrectDimensions(String),
 }

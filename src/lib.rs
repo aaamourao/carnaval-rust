@@ -4,9 +4,8 @@ mod model;
 
 #[cfg(test)]
 mod tests {
-    use std::ops::Mul;
     use more_asserts::{assert_ge, assert_le};
-    use ndarray::{array, Axis, s};
+    use ndarray::{array};
     use crate::activation::{ActivationFunctionType, relu, sigmoid};
     use crate::layer::Layer;
     use crate::layer::dense::Dense;
@@ -33,7 +32,7 @@ mod tests {
     fn dense_works() {
         let nn = Dense::new(2
                             , 1, None);
-        assert_eq!(nn.get_activation_function(), ActivationFunctionType::Relu);
+        assert_eq!(nn.get_activation_function(), ActivationFunctionType::None);
         for weight in nn.layers.iter() {
             assert_le!(weight, &1.0_f64);
             assert_ge!(weight, &0.0_f64);
@@ -42,5 +41,16 @@ mod tests {
 
     #[test]
     fn dense_forward() {
+        let nn = Dense::new(2, 4, None);
+        for weight in &nn.layers {
+            println!("weight: {weight}");
+        }
+        let inference_result = &nn.forward(array![[[2.], [2.]]]);
+
+        if inference_result.is_ok() {
+            for value in inference_result.as_ref().unwrap() {
+                println!["value multiplied by 0.2: {value}"]
+            }
+        }
     }
 }
