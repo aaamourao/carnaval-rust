@@ -1,7 +1,7 @@
 use ndarray::{Array, Axis, Ix3};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
-use crate::activation::{ActivationFunctionType, relu, sigmoid};
+use crate::activation::{ActivationFunctionType, leaky_relu, relu, sigmoid, softmax, tanh};
 use crate::layer::{LayerError, Layer, LayerType};
 
 pub struct Dense {
@@ -58,7 +58,10 @@ impl Layer for Dense {
             let result = match self.activation_function {
                 ActivationFunctionType::Relu => partial_result.map(|x| relu(x)),
                 ActivationFunctionType::Sigmoid => partial_result.map(|x| sigmoid(x)),
-                _ => partial_result,
+                ActivationFunctionType::LeakyRelu => partial_result.map(|x| leaky_relu(x, None)),
+                ActivationFunctionType::Tanh => partial_result.map(|x| tanh(x)),
+                ActivationFunctionType::Softmax => softmax(&partial_result),
+                ActivationFunctionType::None => partial_result,
             };
             Ok(result)
         };
