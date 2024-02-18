@@ -88,8 +88,11 @@ mod tests {
     #[test]
     fn sequential_plot() {
         let layer0 = Dense::new(1, 1, Some(ActivationFunctionType::Relu));
+        println!("layer0: {:?}", layer0.weights);
         let layer1 = Dense::new(1, 1, Some(ActivationFunctionType::Relu));
+        println!("layer1: {:?}", layer1.weights);
         let layer2 = Dense::new(1, 1, Some(ActivationFunctionType::Relu));
+        println!("layer1: {:?}", layer2.weights);
 
         let mut nn = Sequential::new(3);
 
@@ -98,6 +101,7 @@ mod tests {
         nn.push_layer("Hidden Layer 0".to_string(), Box::new(layer2));
 
         let x = array![[[-0.4], [-0.2], [0.0], [0.2], [0.4]]];
+        let x = array![[[-10.0], [-7.5], [-5.0], [-2.5], [0.0], [2.5], [5.0], [7.5], [10.0]]];
         let y = x.map(|xx| nn.predict(&array![[[xx.clone()]]])[[0, 0, 0]]);
 
         let mut curve = Curve::new();

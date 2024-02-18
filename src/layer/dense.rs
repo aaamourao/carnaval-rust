@@ -22,9 +22,9 @@ impl Dense {
                activation_function: Option<ActivationFunctionType>) -> Self {
 
         let layers = Array::random((1, output_size, input_size),
-                                   Uniform::new(0.0, 1.0));
+                                   Uniform::new(-1.0, 1.0));
         let bias = Array::random((1, output_size, 1),
-                                 Uniform::new(0.0, 1.0));
+                                 Uniform::new(-10.0, 10.0));
 
         Dense {
             input_size,
