@@ -62,7 +62,6 @@ impl Layer for Conv2D {
         let (output_height, output_width) = self.output_dim;
         let mut output = Array::zeros((self.filters,
                                        output_height, output_width));
-
         Ok(output)
     }
 }

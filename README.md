@@ -3,7 +3,7 @@
 ## Intro
 
 `carnaval-rust` is a library for implementing Deep Learning models using Rust.
-It is in its early days, and by now, only `Dense` (Fully Connected) layers are
+It is in its early days, and, by now, only `Dense` (Fully Connected) layers are
 implemented.
 
 ## Features
