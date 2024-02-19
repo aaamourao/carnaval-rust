@@ -40,7 +40,7 @@ impl Conv2D {
             kernel_size,
             kernels: populate_kernels_with_random(kernel_size, filters),
             padding,
-            input_dim,
+            input_dim: (input_dim.0 + padding.0, input_dim.1 + padding.1),
             output_dim: get_output_dim(input_dim, padding, kernel_size, dilatation_rate, strides),
             strides,
             dilatation_rate,
@@ -59,7 +59,11 @@ impl Layer for Conv2D {
     }
 
     fn forward(&self, input: &Array<f64, Ix3>) -> Result<Array<f64, Ix3>, LayerError> {
-        todo!()
+        let (output_height, output_width) = self.output_dim;
+        let mut output = Array::zeros((self.filters,
+                                       output_height, output_width));
+
+        Ok(output)
     }
 }
 
