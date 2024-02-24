@@ -73,7 +73,7 @@ impl Layer for Conv2D {
             for i in 0..input_padded_height - self.kernel_size + 1 {
                 // TODO: for now, dilatation/stride is not being considered in the convolution
                 let max_i = i + self.kernel_size;
-                for j in 0..input_padded_width - self.kernel_size + 1{
+                for j in 0..input_padded_width - self.kernel_size + 1 {
                     let max_j = j + self.kernel_size;
                     let input_slice = input_padded.slice(s![0..1, i..max_i, j..max_j]);
                     output[[depth, i, j]] = kernel.mul(&input_slice.index_axis(Axis(0), 0)).sum();
