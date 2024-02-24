@@ -8,6 +8,7 @@ mod tests {
     use ndarray::{array};
     use plotpy::{Curve, Plot};
     use crate::activation::{ActivationFunctionType, relu, sigmoid};
+    use crate::layer::conv2d::Conv2D;
     use crate::layer::Layer;
     use crate::layer::dense::Dense;
     use crate::model::Model;
@@ -116,5 +117,22 @@ mod tests {
             .grid_labels_legend("x", "y");
 
         let result = plot.save("plots/test_sequential.svg");
+    }
+
+    #[test]
+    fn conv2d_basic_test() {
+        let input = array![[
+            [0., 1., 2., 3., 4., 5.],
+            [5., 6., 7., 8., 9., 10.],
+            [11., 12., 13., 14., 15., 16.],
+            [17., 18., 19., 20., 21., 22.],
+        ]];
+
+        let input_shape = input.shape();
+
+        let mut nn = Conv2D::new(1, 3, (input_shape[0], input_shape[1], input_shape[2]), None, None,
+                                 None, None);
+
+        let result = nn.forward(&input);
     }
 }
