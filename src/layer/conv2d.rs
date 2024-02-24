@@ -1,4 +1,4 @@
-use ndarray::{Array, ArrayViewMut, Ix3, s};
+use ndarray::{Array, ArrayViewMut, Axis, Ix3, s};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
 use crate::activation::ActivationFunctionType;
@@ -68,12 +68,15 @@ impl Layer for Conv2D {
         let input_padded_height = input_padded_shape[1];
         let input_padded_width = input_padded_shape[2];
 
-        for i in 0..input_padded_height - self.kernel_size{
-            // TODO: for now, dilatation/stride is not being considered in the convolution
-            let max_i = i + self.kernel_size;
-            for j in 0..input_padded_width - self.kernel_size {
-                let max_j = j + self.kernel_size;
-                println!("{:?}", input_padded.slice(s![0..1, i..max_i, j..max_j]));
+        for kernel in self.kernels.iter() {
+            for i in 0..input_padded_height - self.kernel_size {
+                // TODO: for now, dilatation/stride is not being considered in the convolution
+                let max_i = i + self.kernel_size;
+                for j in 0..input_padded_width - self.kernel_size {
+                    let max_j = j + self.kernel_size;
+                    let input_slice = input_padded.slice(s![0..1, i..max_i, j..max_j]);
+                    println!("{:?}", kernel.index_axis(Axis(0), 0).dot(&input_slice.index_axis(Axis(0), 0)));
+                }
             }
         }
 
@@ -85,12 +88,11 @@ fn populate_kernels_with_random(kernel_size: usize, filters: usize)
     -> Vec<Array<f64, Ix3>> {
     let mut kernels = Vec::with_capacity(kernel_size);
 
-    let initial_filter = Array::random((1, kernel_size, kernel_size),
-                                       Uniform::new(-1.0, 1.0));
-
     let mut i: usize = filters;
-    while i > 1 {
-        kernels.push(initial_filter.clone());
+    while i >= 1 {
+        let initial_filter = Array::random((1, kernel_size, kernel_size),
+                                           Uniform::new(-1.0, 1.0));
+        kernels.push(initial_filter);
         i -= 1;
     }
 
