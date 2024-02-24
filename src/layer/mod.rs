@@ -3,6 +3,8 @@ use crate::activation::ActivationFunctionType;
 
 pub mod dense;
 pub mod conv2d;
+pub mod maxpool2d;
+mod util;
 
 pub enum LayerType {
     Dense,

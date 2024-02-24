@@ -20,8 +20,8 @@ implemented.
 ### Layers
 
 * Dense
-* Conv2D (in progress)
-* MaxPool (soon)
+* Conv2D (partially implemented)
+* MaxPool (in progress)
 * Flatten (soon)
 * Dropout (soon)
 

@@ -1,9 +1,10 @@
 use std::ops::Mul;
-use ndarray::{Array, ArrayViewMut, Axis, Ix3, s};
+use ndarray::{Array, Axis, Ix3, s};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
 use crate::activation::ActivationFunctionType;
 use crate::layer::{Layer, LayerError, LayerType};
+use crate::layer::util::{add_padding};
 
 pub struct Conv2D {
     filters: usize,
@@ -66,17 +67,23 @@ impl Layer for Conv2D {
                                        output_height, output_width));
 
         let input_padded_shape = input_padded.shape();
+        let input_padded_depth = input_padded_shape[0];
         let input_padded_height = input_padded_shape[1];
         let input_padded_width = input_padded_shape[2];
 
-        for (depth, kernel) in self.kernels.iter().enumerate() {
-            for i in 0..input_padded_height - self.kernel_size + 1 {
-                // TODO: for now, dilatation/stride is not being considered in the convolution
-                let max_i = i + self.kernel_size;
-                for j in 0..input_padded_width - self.kernel_size + 1 {
-                    let max_j = j + self.kernel_size;
-                    let input_slice = input_padded.slice(s![0..1, i..max_i, j..max_j]);
-                    output[[depth, i, j]] = kernel.mul(&input_slice.index_axis(Axis(0), 0)).sum();
+        for (kernel_index, kernel) in self.kernels.iter().enumerate() {
+            for channel in 0..input_padded_depth {
+                let depth = channel + (input_padded_depth * kernel_index);
+                let max_depth = depth + 1;
+                for row in 0..input_padded_height - self.kernel_size + 1 {
+                    // TODO: for now, dilatation/stride is not being considered in the convolution
+                    let max_row = row + self.kernel_size;
+                    for col in 0..input_padded_width - self.kernel_size + 1 {
+                        let max_col = col + self.kernel_size;
+                        let input_slice = input_padded.slice(
+                            s![depth..max_depth, row..max_row, col..max_col]);
+                        output[[depth, row, col]] = kernel.mul(&input_slice.index_axis(Axis(0), 0)).sum();
+                    }
                 }
             }
         }
@@ -84,9 +91,8 @@ impl Layer for Conv2D {
         Ok(output)
     }
 }
-
 fn populate_kernels_with_random(kernel_size: usize, filters: usize)
-    -> Vec<Array<f64, Ix3>> {
+                                -> Vec<Array<f64, Ix3>> {
     let mut kernels = Vec::with_capacity(kernel_size);
 
     let mut i: usize = filters;
@@ -99,28 +105,11 @@ fn populate_kernels_with_random(kernel_size: usize, filters: usize)
 
     return kernels
 }
-
-fn add_padding(input: &Array<f64, Ix3>, padding: &(usize, usize)) -> Array<f64, Ix3> {
-    let input_shape = input.shape();
-    let input_depth = input_shape[0];
-    let input_height = input_shape[1];
-    let input_width = input_shape[2];
-
-
-    let mut input_padded = Array::zeros((input_depth,
-                                         input_height + padding.0, input_width + padding.1));
-
-    input_padded.slice_mut(s![0..input_depth,
-        padding.0..input_height, padding.1..input_width]).assign(input);
-
-    return input_padded
-}
-
-fn get_output_dim(input_dim: (usize, usize, usize),
-                  padding: (usize, usize),
-                  kernel_size: usize,
-                  dilatation_rate: (usize, usize),
-                  strides: (usize, usize)) -> (usize, usize, usize) {
+pub fn get_output_dim(input_dim: (usize, usize, usize),
+                      padding: (usize, usize),
+                      kernel_size: usize,
+                      dilatation_rate: (usize, usize),
+                      strides: (usize, usize)) -> (usize, usize, usize) {
     let (input_depth, input_height, input_width) = input_dim;
     let (padding_height, padding_width) = padding;
     let (dilatation_height, dilatation_width) = dilatation_rate;

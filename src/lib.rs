@@ -11,6 +11,7 @@ mod tests {
     use crate::layer::conv2d::Conv2D;
     use crate::layer::Layer;
     use crate::layer::dense::Dense;
+    use crate::layer::maxpool2d::MaxPool2D;
     use crate::model::Model;
     use crate::model::sequential::Sequential;
 
@@ -134,5 +135,24 @@ mod tests {
                                  None, None);
 
         let result = nn.forward(&input);
+        println!("{:?}", result);
+    }
+
+    #[test]
+    fn maxpool2d_basic_test() {
+        let input = array![[
+            [0., 1., 2., 3., 4., 5.],
+            [5., 6., 7., 8., 9., 10.],
+            [11., 12., 13., 14., 15., 16.],
+            [17., 18., 19., 20., 21., 22.],
+        ]];
+
+        let mut nn = MaxPool2D::new((2, 2), None, None);
+
+        let result = nn.forward(&input).unwrap();
+        assert_eq!(result, array![[[6.0, 7.0, 8.0, 9.0, 10.0],
+            [12.0, 13.0, 14.0, 15.0, 16.0],
+            [18.0, 19.0, 20.0, 21.0, 22.0]]]
+        )
     }
 }
