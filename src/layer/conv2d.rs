@@ -2,7 +2,7 @@ use std::ops::Mul;
 use ndarray::{Array, Axis, Ix3, s};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
-use crate::activation::ActivationFunctionType;
+use crate::activation::{ActivationFunctionType, leaky_relu, relu, sigmoid, softmax, tanh};
 use crate::layer::{Layer, LayerError, LayerType};
 use crate::layer::util::{add_padding};
 
@@ -86,7 +86,14 @@ impl Layer for Conv2D {
                             s![channel..max_channel, row..max_row, col..max_col]);
                         output_cel += kernel.mul(&input_slice.index_axis(Axis(0), 0)).sum();
                     }
-                    output[[kernel_index, row, col]] = output_cel;
+                    output[[kernel_index, row, col]] = match self.activation_function {
+                        ActivationFunctionType::Relu => relu(&output_cel),
+                        ActivationFunctionType::Sigmoid => sigmoid(&output_cel),
+                        ActivationFunctionType::LeakyRelu => leaky_relu(&output_cel, None),
+                        ActivationFunctionType::Tanh => tanh(&output_cel),
+                        // ActivationFunctionType::Softmax => softmax(&partial_result),
+                        _ => output_cel,
+                    };
                 }
             }
         }
