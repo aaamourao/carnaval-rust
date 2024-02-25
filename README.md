@@ -21,8 +21,8 @@ implemented.
 
 * Dense
 * Conv2D (partially implemented)
-* MaxPool (in progress)
-* Flatten (soon)
+* MaxPool
+* Flatten (partially implemented)
 * Dropout (soon)
 
 ### Model Types

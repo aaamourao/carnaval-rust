@@ -5,6 +5,7 @@ pub mod dense;
 pub mod conv2d;
 pub mod maxpool2d;
 mod util;
+pub mod flatten;
 
 pub enum LayerType {
     Dense,
