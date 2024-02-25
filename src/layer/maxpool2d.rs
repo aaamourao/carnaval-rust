@@ -56,11 +56,13 @@ impl Layer for MaxPool2D {
             for row in (0..(input_padded_height - self.pool_size.0 + 1)).step_by(self.pool_size.0) {
                 let max_row = row + self.pool_size.0;
                 let mut output_col = 0;
-                for col in (0..(input_padded_width - self.pool_size.1 + 1)).step_by(self.pool_size.1) {
+                for col in
+                (0..(input_padded_width - self.pool_size.1 + 1)).step_by(self.pool_size.1) {
                     let max_col = col + self.pool_size.1;
                     let input_slice = input_padded.slice(
                         s![channel..max_channel, row..max_row, col..max_col]);
-                    output[[channel, output_row, output_col]] = *input_slice.index_axis(Axis(0), 0).max().unwrap();
+                    output[[channel, output_row, output_col]] =
+                        *input_slice.index_axis(Axis(0), 0).max().unwrap();
                     output_col += 1;
                 }
                 output_row += 1;
