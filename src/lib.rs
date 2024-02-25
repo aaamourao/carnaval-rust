@@ -214,7 +214,7 @@ mod tests {
         nn.push_layer("Dense layer 0".to_string(), Box::new(layer7));
         nn.push_layer("Dense layer 1 (classification)".to_string(), Box::new(layer8));
 
-        //let result = nn.forward(&input);
-        //println!("{:?}", result);
+        let result = nn.forward(&input);
+        println!("{:?}", result);
     }
 }
