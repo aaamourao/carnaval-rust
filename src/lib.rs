@@ -200,7 +200,7 @@ mod tests {
 
         let layer6 = Flatten::new(None);
         let layer7 = Dense::new(dense_0_input_size, 128, Some(ActivationFunctionType::Relu));
-        let layer8 = Dense::new(128, 2, Some(ActivationFunctionType::Softmax));
+        let layer8 = Dense::new(128, 2, Some(ActivationFunctionType::Sigmoid));
 
         let mut nn = Sequential::new(9);
 
