@@ -2,7 +2,7 @@ use std::ops::Mul;
 use ndarray::{Array, Axis, Ix3, s};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
-use crate::activation::{ActivationFunctionType, leaky_relu, relu, sigmoid, softmax, tanh};
+use crate::activation::{ActivationFunctionType, leaky_relu, relu, sigmoid, tanh};
 use crate::layer::{Layer, LayerError, LayerType};
 use crate::layer::util::{add_padding};
 
