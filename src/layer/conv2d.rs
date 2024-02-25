@@ -12,7 +12,7 @@ pub struct Conv2D {
     kernels: Vec<Array<f64, Ix3>>,
     padding: (usize, usize),
     input_dim: (usize, usize, usize),
-    output_dim: (usize, usize, usize),
+    pub output_dim: (usize, usize, usize),
     strides: (usize, usize),
     dilatation_rate: (usize, usize),
     activation_function: ActivationFunctionType,
@@ -74,14 +74,14 @@ impl Layer for Conv2D {
         for (kernel_index, kernel) in self.kernels.iter().enumerate() {
             for channel in 0..input_padded_depth {
                 let depth = channel + (input_padded_depth * kernel_index);
-                let max_depth = depth + 1;
+                let max_channel = channel + 1;
                 for row in 0..input_padded_height - self.kernel_size + 1 {
                     // TODO: for now, dilatation/stride is not being considered in the convolution
                     let max_row = row + self.kernel_size;
                     for col in 0..input_padded_width - self.kernel_size + 1 {
                         let max_col = col + self.kernel_size;
                         let input_slice = input_padded.slice(
-                            s![depth..max_depth, row..max_row, col..max_col]);
+                            s![channel..max_channel, row..max_row, col..max_col]);
                         output[[depth, row, col]] = kernel.mul(&input_slice.index_axis(Axis(0), 0)).sum();
                     }
                 }

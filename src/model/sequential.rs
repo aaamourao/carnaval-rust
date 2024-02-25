@@ -36,7 +36,11 @@ impl Model for Sequential {
         return current
     }
 
-    fn forward(&self, input: &Array<f64, Ix3>, target: Array<f64, Ix2>) -> Array<f64, Ix3> {
-        todo!()
+    fn forward(&self, input: &Array<f64, Ix3>) -> Array<f64, Ix3> {
+        let mut result = input.clone();
+        for layer in self.layers.iter() {
+            result = layer.forward(&result).unwrap();
+        }
+        return result
     }
 }
