@@ -171,8 +171,8 @@ mod tests {
 
         let result = nn.forward(&input).unwrap();
 
-        assert_eq!(result.shape(), [1_usize, 1_usize, 24_usize]);
-        assert_eq!(result[[0, 0, 23]], 23.);
+        assert_eq!(result.shape(), [1_usize, 24_usize, 1_usize]);
+        assert_eq!(result[[0, 23, 0]], 23.);
     }
 
     #[test]
