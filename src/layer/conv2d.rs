@@ -43,7 +43,8 @@ impl Conv2D {
             kernels: populate_kernels_with_random(kernel_size, filters),
             padding,
             input_dim: (input_dim.0, input_dim.1 + padding.0, input_dim.2 + padding.1),
-            output_dim: get_output_dim(input_dim, padding, kernel_size, dilatation_rate, strides),
+            output_dim: get_output_dim(input_dim, padding, kernel_size, dilatation_rate, strides,
+            filters),
             strides,
             dilatation_rate,
             activation_function,
@@ -63,7 +64,7 @@ impl Layer for Conv2D {
     fn forward(&self, input: &Array<f64, Ix3>) -> Result<Array<f64, Ix3>, LayerError> {
         let input_padded = add_padding(input, &self.padding);
         let (output_depth, output_height, output_width) = self.output_dim;
-        let mut output = Array::zeros((self.filters * output_depth,
+        let mut output = Array::zeros((output_depth,
                                        output_height, output_width));
 
         let input_padded_shape = input_padded.shape();
@@ -72,18 +73,20 @@ impl Layer for Conv2D {
         let input_padded_width = input_padded_shape[2];
 
         for (kernel_index, kernel) in self.kernels.iter().enumerate() {
-            for channel in 0..input_padded_depth {
-                let depth = channel + (input_padded_depth * kernel_index);
-                let max_channel = channel + 1;
-                for row in 0..input_padded_height - self.kernel_size + 1 {
-                    // TODO: for now, dilatation/stride is not being considered in the convolution
-                    let max_row = row + self.kernel_size;
-                    for col in 0..input_padded_width - self.kernel_size + 1 {
+            for row in 0..input_padded_height - self.kernel_size + 1 {
+                // TODO: for now, dilatation/stride is not being considered in the convolution
+                let max_row = row + self.kernel_size;
+                for col in 0..input_padded_width - self.kernel_size + 1 {
+                    let mut output_cel = 0.;
+                    for channel in 0..input_padded_depth {
+                        let depth = channel + (input_padded_depth * kernel_index);
+                        let max_channel = channel + 1;
                         let max_col = col + self.kernel_size;
                         let input_slice = input_padded.slice(
                             s![channel..max_channel, row..max_row, col..max_col]);
-                        output[[depth, row, col]] = kernel.mul(&input_slice.index_axis(Axis(0), 0)).sum();
+                        output_cel += kernel.mul(&input_slice.index_axis(Axis(0), 0)).sum();
                     }
+                    output[[kernel_index, row, col]] = output_cel;
                 }
             }
         }
@@ -109,7 +112,8 @@ pub fn get_output_dim(input_dim: (usize, usize, usize),
                       padding: (usize, usize),
                       kernel_size: usize,
                       dilatation_rate: (usize, usize),
-                      strides: (usize, usize)) -> (usize, usize, usize) {
+                      strides: (usize, usize),
+                      filters: usize) -> (usize, usize, usize) {
     let (input_depth, input_height, input_width) = input_dim;
     let (padding_height, padding_width) = padding;
     let (dilatation_height, dilatation_width) = dilatation_rate;
@@ -120,5 +124,5 @@ pub fn get_output_dim(input_dim: (usize, usize, usize),
     let width = 1 + (input_width + 2 * padding_width - kernel_size - (kernel_size - 1)
         * (dilatation_width - 1)) / stride_width;
 
-    (input_depth, height, width)
+    (filters, height, width)
 }
