@@ -120,7 +120,7 @@ pub fn get_output_dim(input_dim: (usize, usize, usize),
                       dilatation_rate: (usize, usize),
                       strides: (usize, usize),
                       filters: usize) -> (usize, usize, usize) {
-    let (input_depth, input_height, input_width) = input_dim;
+    let (_, input_height, input_width) = input_dim;
     let (padding_height, padding_width) = padding;
     let (dilatation_height, dilatation_width) = dilatation_rate;
     let (stride_height, stride_width) = strides;
