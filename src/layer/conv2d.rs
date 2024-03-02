@@ -79,7 +79,6 @@ impl Layer for Conv2D {
                 for col in 0..input_padded_width - self.kernel_size + 1 {
                     let mut output_cel = 0.;
                     for channel in 0..input_padded_depth {
-                        let depth = channel + (input_padded_depth * kernel_index);
                         let max_channel = channel + 1;
                         let max_col = col + self.kernel_size;
                         let input_slice = input_padded.slice(
