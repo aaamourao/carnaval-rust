@@ -1,5 +1,5 @@
 use std::ops::Mul;
-use ndarray::{Array, Axis, Ix3, s};
+use ndarray::{Array, Axis, Ix3, s, Zip};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
 use crate::activation::{ActivationFunctionType, leaky_relu, relu, sigmoid, tanh};
@@ -72,6 +72,27 @@ impl Layer for Conv2D {
         let input_padded_height = input_padded_shape[1];
         let input_padded_width = input_padded_shape[2];
 
+        Zip::indexed(output.view_mut()).par_for_each(|(feature, row, col), value| {
+            let max_row = row + self.kernel_size;
+            let max_col = col + self.kernel_size;
+            let kernel = &self.kernels[feature];
+            let mut output_cel = 0.;
+            for channel in 0..input_padded_depth {
+                let max_channel = channel + 1;
+                let input_slice = input_padded.slice(
+                    s![channel..max_channel, row..max_row, col..max_col]);
+                output_cel += kernel.mul(&input_slice.index_axis(Axis(0), 0)).sum();
+            }
+            *value = match self.activation_function {
+                ActivationFunctionType::Relu => relu(&output_cel),
+                ActivationFunctionType::Sigmoid => sigmoid(&output_cel),
+                ActivationFunctionType::LeakyRelu => leaky_relu(&output_cel, None),
+                ActivationFunctionType::Tanh => tanh(&output_cel),
+                // ActivationFunctionType::Softmax => softmax(&partial_result),
+                _ => output_cel,
+            };
+        });
+/*
         for (kernel_index, kernel) in self.kernels.iter().enumerate() {
             for row in 0..input_padded_height - self.kernel_size + 1 {
                 // TODO: for now, dilatation/stride is not being considered in the convolution
@@ -95,7 +116,7 @@ impl Layer for Conv2D {
                     };
                 }
             }
-        }
+        }*/
 
         Ok(output)
     }
