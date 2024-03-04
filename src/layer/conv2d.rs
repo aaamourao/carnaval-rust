@@ -1,7 +1,9 @@
 use std::ops::Mul;
-use ndarray::{Array, Axis, Ix3, s, Zip};
+use ndarray::{Array, array, Axis, Ix3, s, Zip};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
+use rayon::iter::IntoParallelIterator;
+use rayon::iter::ParallelIterator;
 use crate::activation::{ActivationFunctionType, leaky_relu, relu, sigmoid, tanh};
 use crate::layer::{Layer, LayerError, LayerType};
 use crate::layer::util::{add_padding};
@@ -77,13 +79,15 @@ impl Layer for Conv2D {
             let max_row = row + self.kernel_size;
             let max_col = col + self.kernel_size;
             let kernel = &self.kernels[feature];
-            let mut output_cel = 0.;
-            for channel in 0..input_padded_depth {
-                let max_channel = channel + 1;
-                let input_slice = input_padded.slice(
-                    s![channel..max_channel, row..max_row, col..max_col]);
-                output_cel += kernel.mul(&input_slice.index_axis(Axis(0), 0)).sum();
-            }
+
+            let input_slice = input_padded.slice(
+                s!(0..input_padded_depth, row..max_row, col..max_col)
+            );
+
+            let output_cel = input_slice.axis_iter(Axis(0)).into_par_iter().map(|input_slice_slice| {
+                kernel.mul(&input_slice_slice).sum()
+            }).sum::<f64>();
+
             *value = match self.activation_function {
                 ActivationFunctionType::Relu => relu(&output_cel),
                 ActivationFunctionType::Sigmoid => sigmoid(&output_cel),
