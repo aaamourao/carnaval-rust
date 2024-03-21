@@ -1,5 +1,6 @@
-use ndarray::{Array, Axis, Ix3};
+use ndarray::{Array, Axis, Ix3, Zip};
 use ndarray_rand::RandomExt;
+use rayon::iter::ParallelIterator;
 use rand::distributions::Uniform;
 use crate::activation::{ActivationFunctionType, leaky_relu, relu, sigmoid, softmax, tanh};
 use crate::layer::{LayerError, Layer, LayerType};
@@ -21,7 +22,7 @@ impl Dense {
                output_size: usize,
                activation_function: Option<ActivationFunctionType>) -> Self {
 
-        let layers = Array::random((1, output_size, input_size),
+        let layers = Array::random((input_size, output_size, 1),
                                    Uniform::new(-1.0, 1.0));
         let bias = Array::random((1, output_size, 1),
                                  Uniform::new(-10.0, 10.0));
@@ -52,8 +53,10 @@ impl Layer for Dense {
             ))
         } else {
 
-            let partial_result = &self.weights.index_axis(Axis(0), 0).dot(
-                &input.index_axis(Axis(0), 0)) + &self.bias;
+            let partial_result = &input.index_axis(Axis(2), 0).dot(
+                &self.weights.index_axis(Axis(2), 0)).to_shape((1, self.output_size, 1)).unwrap()
+                + &self.bias;
+
 
             let result = match self.activation_function {
                 ActivationFunctionType::Relu => partial_result.map(|x| relu(x)),
@@ -61,7 +64,7 @@ impl Layer for Dense {
                 ActivationFunctionType::LeakyRelu => partial_result.map(|x| leaky_relu(x, None)),
                 ActivationFunctionType::Tanh => partial_result.map(|x| tanh(x)),
                 ActivationFunctionType::Softmax => softmax(&partial_result),
-                ActivationFunctionType::None => partial_result,
+                ActivationFunctionType::None => partial_result.clone(),
             };
             Ok(result)
         };
