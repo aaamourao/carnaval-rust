@@ -1,14 +1,16 @@
-use ndarray::Array;
+use std::time::Instant;
+use ndarray::{Array, Ix3};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
-extern crate carnaval_rust;
+use carnaval_rust::activation::ActivationFunctionType;
+use carnaval_rust::layer::conv2d::Conv2D;
+use carnaval_rust::layer::dense::Dense;
+use carnaval_rust::layer::flatten::Flatten;
+use carnaval_rust::layer::maxpool2d::MaxPool2D;
+use carnaval_rust::model::Model;
+use carnaval_rust::model::sequential::Sequential;
 
-fn deep_learning_model() {
-
-    let input = Array::random((224, 224, 3),
-                              Uniform::new(0., 1.));
-
-    let input_shape = input.shape();
+fn create_deep_learning_model(input_shape: &[usize]) -> Sequential {
 
     let layer0 = Conv2D::new(32, 3, (input_shape[0], input_shape[1], input_shape[2]), None, None,
                              None, Some(ActivationFunctionType::Relu));
@@ -41,10 +43,16 @@ fn deep_learning_model() {
     nn.push_layer("Dense layer 0".to_string(), Box::new(layer7));
     nn.push_layer("Dense layer 1 (classification)".to_string(), Box::new(layer8));
 
-    let result = nn.forward(&input);
-    println!("Result: {:?}", result);
+    nn
 }
 
 fn main() {
-
+    let input = Array::random((224, 224, 3),
+                              Uniform::new(0., 1.));
+    let model = create_deep_learning_model(input.shape());
+    let start_time = Instant::now();
+    let result = model.forward(&input);
+    let duration = Instant::now() - start_time;
+    println!("CNN inference time spent {:?}", duration);
+    println!("Result: {:?}", result);
 }
