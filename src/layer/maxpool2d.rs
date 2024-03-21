@@ -23,9 +23,9 @@ impl MaxPool2D {
     }
 
     pub fn get_output_dim(&self, input_dim: (usize, usize, usize))-> (usize, usize, usize) {
-        let (input_channel_size, input_height, input_width) = input_dim;
+        let (input_height, input_width, input_feature_size) = input_dim;
         // TODO: strides are not considered by now, add padding
-        (input_channel_size, input_height / self.pool_size.0, input_width / self.pool_size.1)
+        (input_height / self.pool_size.0, input_width / self.pool_size.1, input_feature_size)
     }
 }
 
@@ -41,32 +41,32 @@ impl Layer for MaxPool2D {
     fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, LayerError> {
         let input_padded = add_padding(input, &self.padding);
         let input_shape = input_padded.shape();
-        let input_padded_channel_size = input_shape[0];
-        let input_padded_height = input_shape[1];
-        let input_padded_width = input_shape[2];
+        let input_padded_height = input_shape[0];
+        let input_padded_width = input_shape[1];
+        let input_padded_feature_size = input_shape[2];
 
-        let (output_channel_size, output_height, output_width) = self.get_output_dim(
-            (input_padded_channel_size, input_padded_height, input_padded_width));
+        let (output_height, output_width, output_feature_size) = self.get_output_dim(
+            (input_padded_height, input_padded_width, input_padded_feature_size));
 
-        let mut output = Array::zeros((output_channel_size, output_height, output_width));
+        let mut output = Array::zeros((output_height, output_width, output_feature_size));
 
-        for channel in 0..input_padded_channel_size {
-            let max_channel = channel + 1;
-            let mut output_row = 0;
-            for row in (0..(input_padded_height - self.pool_size.0 + 1)).step_by(self.pool_size.0) {
-                let max_row = row + self.pool_size.0;
-                let mut output_col = 0;
-                for col in
-                (0..(input_padded_width - self.pool_size.1 + 1)).step_by(self.pool_size.1) {
-                    let max_col = col + self.pool_size.1;
+        let mut output_row = 0;
+        for row in (0..(input_padded_height - self.pool_size.0 + 1)).step_by(self.pool_size.0) {
+            let max_row = row + self.pool_size.0;
+            let mut output_col = 0;
+            for col in
+            (0..(input_padded_width - self.pool_size.1 + 1)).step_by(self.pool_size.1) {
+                let max_col = col + self.pool_size.1;
+                for feature in 0..input_padded_feature_size {
+                    let max_feature = feature + 1;
                     let input_slice = input_padded.slice(
-                        s![channel..max_channel, row..max_row, col..max_col]);
-                    output[[channel, output_row, output_col]] =
-                        *input_slice.index_axis(Axis(0), 0).max().unwrap();
-                    output_col += 1;
+                        s![row..max_row, col..max_col, feature..max_feature]);
+                    output[[output_row, output_col, feature]] =
+                        *input_slice.index_axis(Axis(2), 0).max().unwrap();
                 }
-                output_row += 1;
+                output_col += 1;
             }
+            output_row += 1;
         }
 
         Ok(output)
