@@ -178,7 +178,7 @@ mod tests {
     #[test]
     fn deep_learning_model() {
 
-        let input = Array::random((3, 224, 224),
+        let input = Array::random((224, 224, 3),
                                   Uniform::new(0., 1.));
 
         let input_shape = input.shape();

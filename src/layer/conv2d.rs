@@ -70,21 +70,19 @@ impl Layer for Conv2D {
                                        output_height, output_width));
 
         let input_padded_shape = input_padded.shape();
-        let input_padded_depth = input_padded_shape[0];
-        let input_padded_height = input_padded_shape[1];
-        let input_padded_width = input_padded_shape[2];
+        let input_padded_depth = input_padded_shape[2];
 
         // TODO: Dilation and stride are not being considered now
-        Zip::indexed(output.view_mut()).par_for_each(|(feature, row, col), value| {
+        Zip::indexed(output.view_mut()).par_for_each(|(row, col, feature), value| {
             let max_row = row + self.kernel_size;
             let max_col = col + self.kernel_size;
             let kernel = &self.kernels[feature];
 
             let input_slice = input_padded.slice(
-                s!(0..input_padded_depth, row..max_row, col..max_col)
+                s!(row..max_row, col..max_col, 0..input_padded_depth)
             );
 
-            let output_cel = input_slice.axis_iter(Axis(0)).into_par_iter().map(|input_slice_slice| {
+            let output_cel = input_slice.axis_iter(Axis(2)).into_par_iter().map(|input_slice_slice| {
                 kernel.mul(&input_slice_slice).sum()
             }).sum::<f32>();
 
@@ -121,7 +119,7 @@ pub fn get_output_dim(input_dim: (usize, usize, usize),
                       dilatation_rate: (usize, usize),
                       strides: (usize, usize),
                       filters: usize) -> (usize, usize, usize) {
-    let (_, input_height, input_width) = input_dim;
+    let (input_height, input_width, _) = input_dim;
     let (padding_height, padding_width) = padding;
     let (dilatation_height, dilatation_width) = dilatation_rate;
     let (stride_height, stride_width) = strides;
@@ -131,5 +129,5 @@ pub fn get_output_dim(input_dim: (usize, usize, usize),
     let width = 1 + (input_width + 2 * padding_width - kernel_size - (kernel_size - 1)
         * (dilatation_width - 1)) / stride_width;
 
-    (filters, height, width)
+    (height, width, filters)
 }
