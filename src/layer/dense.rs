@@ -7,8 +7,8 @@ use crate::layer::{LayerError, Layer, LayerType};
 pub struct Dense {
     pub input_size: usize,
     pub output_size: usize,
-    pub weights: Array<f64, Ix3>,
-    pub bias: Array<f64, Ix3>,
+    pub weights: Array<f32, Ix3>,
+    pub bias: Array<f32, Ix3>,
     pub activation_function: ActivationFunctionType,
 }
 
@@ -45,7 +45,7 @@ impl Layer for Dense {
         return self.activation_function
     }
 
-    fn forward(&self, input: &Array<f64, Ix3>) -> Result<Array<f64, Ix3>, LayerError> {
+    fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, LayerError> {
         let result = if input.len_of(Axis(0)) != 1 && input.len_of(Axis(2)) != 1 {
             Err(LayerError::IncorrectDimensions(
                 "input should have dimensions (1, input_size, 1)".to_string()

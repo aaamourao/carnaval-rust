@@ -1,6 +1,6 @@
 use ndarray::{Array, Ix3, s};
 
-pub fn add_padding(input: &Array<f64, Ix3>, padding: &(usize, usize)) -> Array<f64, Ix3> {
+pub fn add_padding(input: &Array<f32, Ix3>, padding: &(usize, usize)) -> Array<f32, Ix3> {
     let input_shape = input.shape();
     let input_depth = input_shape[0];
     let input_height = input_shape[1];

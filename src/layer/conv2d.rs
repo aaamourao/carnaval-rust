@@ -1,5 +1,5 @@
 use std::ops::Mul;
-use ndarray::{Array, array, Axis, Ix3, s, Zip};
+use ndarray::{Array, Axis, Ix3, s, Zip};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
 use rayon::iter::IntoParallelIterator;
@@ -11,7 +11,7 @@ use crate::layer::util::{add_padding};
 pub struct Conv2D {
     filters: usize,
     kernel_size: usize,
-    kernels: Vec<Array<f64, Ix3>>,
+    kernels: Vec<Array<f32, Ix3>>,
     padding: (usize, usize),
     input_dim: (usize, usize, usize),
     pub output_dim: (usize, usize, usize),
@@ -63,7 +63,7 @@ impl Layer for Conv2D {
         self.activation_function
     }
 
-    fn forward(&self, input: &Array<f64, Ix3>) -> Result<Array<f64, Ix3>, LayerError> {
+    fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, LayerError> {
         let input_padded = add_padding(input, &self.padding);
         let (output_depth, output_height, output_width) = self.output_dim;
         let mut output = Array::zeros((output_depth,
@@ -86,7 +86,7 @@ impl Layer for Conv2D {
 
             let output_cel = input_slice.axis_iter(Axis(0)).into_par_iter().map(|input_slice_slice| {
                 kernel.mul(&input_slice_slice).sum()
-            }).sum::<f64>();
+            }).sum::<f32>();
 
             *value = match self.activation_function {
                 ActivationFunctionType::Relu => relu(&output_cel),
@@ -102,7 +102,7 @@ impl Layer for Conv2D {
     }
 }
 fn populate_kernels_with_random(kernel_size: usize, filters: usize)
-                                -> Vec<Array<f64, Ix3>> {
+                                -> Vec<Array<f32, Ix3>> {
     let mut kernels = Vec::with_capacity(kernel_size);
 
     let mut i: usize = filters;

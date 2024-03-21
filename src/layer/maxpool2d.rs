@@ -38,7 +38,7 @@ impl Layer for MaxPool2D {
         ActivationFunctionType::None
     }
 
-    fn forward(&self, input: &Array<f64, Ix3>) -> Result<Array<f64, Ix3>, LayerError> {
+    fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, LayerError> {
         let input_padded = add_padding(input, &self.padding);
         let input_shape = input_padded.shape();
         let input_padded_depth = input_shape[0];

@@ -32,8 +32,8 @@ mod tests {
         let result_6 = sigmoid(&6.0);
         let result_minus_6 = sigmoid(&-6.0);
         assert_eq!(result, 0.5);
-        assert_eq!(result_6, 0.9975273768433653);
-        assert_eq!(result_minus_6, 0.0024726231566347743);
+        assert_eq!(result_6, 0.9975274);
+        assert_eq!(result_minus_6, 0.002472623);
     }
 
     #[test]
@@ -42,8 +42,8 @@ mod tests {
                             , 1, None);
         assert_eq!(nn.get_activation_function(), ActivationFunctionType::None);
         for weight in nn.weights.iter() {
-            assert_le!(weight, &1.0_f64);
-            assert_ge!(weight, &-1.0_f64);
+            assert_le!(weight, &1.0_f32);
+            assert_ge!(weight, &-1.0_f32);
         }
     }
 

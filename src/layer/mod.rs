@@ -28,5 +28,5 @@ pub trait Layer {
 
     fn get_activation_function(&self) -> ActivationFunctionType;
 
-    fn forward(&self, input: &Array<f64, Ix3>,) -> Result<Array<f64, Ix3>, LayerError>;
+    fn forward(&self, input: &Array<f32, Ix3>,) -> Result<Array<f32, Ix3>, LayerError>;
 }
