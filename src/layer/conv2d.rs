@@ -65,9 +65,9 @@ impl Layer for Conv2D {
 
     fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, LayerError> {
         let input_padded = add_padding(input, &self.padding);
-        let (output_depth, output_height, output_width) = self.output_dim;
-        let mut output = Array::zeros((output_depth,
-                                       output_height, output_width));
+        let (output_height, output_width, output_depth) = self.output_dim;
+        let mut output = Array::zeros((output_height,
+                                       output_width, output_depth));
 
         let input_padded_shape = input_padded.shape();
         let input_padded_depth = input_padded_shape[2];
@@ -83,6 +83,7 @@ impl Layer for Conv2D {
             );
 
             let output_cel = input_slice.axis_iter(Axis(2)).into_par_iter().map(|input_slice_slice| {
+                println!("{:?}", input_slice_slice);
                 kernel.mul(&input_slice_slice).sum()
             }).sum::<f32>();
 
