@@ -23,9 +23,9 @@ impl MaxPool2D {
     }
 
     pub fn get_output_dim(&self, input_dim: (usize, usize, usize))-> (usize, usize, usize) {
-        let (input_depth, input_height, input_width) = input_dim;
+        let (input_channel_size, input_height, input_width) = input_dim;
         // TODO: strides are not considered by now, add padding
-        (input_depth, input_height / self.pool_size.0, input_width / self.pool_size.1)
+        (input_channel_size, input_height / self.pool_size.0, input_width / self.pool_size.1)
     }
 }
 
@@ -41,16 +41,16 @@ impl Layer for MaxPool2D {
     fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, LayerError> {
         let input_padded = add_padding(input, &self.padding);
         let input_shape = input_padded.shape();
-        let input_padded_depth = input_shape[0];
+        let input_padded_channel_size = input_shape[0];
         let input_padded_height = input_shape[1];
         let input_padded_width = input_shape[2];
 
-        let (output_depth, output_height, output_width) = self.get_output_dim(
-            (input_padded_depth, input_padded_height, input_padded_width));
+        let (output_channel_size, output_height, output_width) = self.get_output_dim(
+            (input_padded_channel_size, input_padded_height, input_padded_width));
 
-        let mut output = Array::zeros((output_depth, output_height, output_width));
+        let mut output = Array::zeros((output_channel_size, output_height, output_width));
 
-        for channel in 0..input_padded_depth {
+        for channel in 0..input_padded_channel_size {
             let max_channel = channel + 1;
             let mut output_row = 0;
             for row in (0..(input_padded_height - self.pool_size.0 + 1)).step_by(self.pool_size.0) {

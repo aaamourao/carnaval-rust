@@ -42,9 +42,9 @@ impl Conv2D {
         Conv2D {
             filters,
             kernel_size,
-            kernels: populate_kernels_with_random(kernel_size, filters),
+            kernels: populate_kernels_with_random(kernel_size, filters, input_dim.2),
             padding,
-            input_dim: (input_dim.0, input_dim.1 + padding.0, input_dim.2 + padding.1),
+            input_dim: (input_dim.0 + padding.0, input_dim.1 + padding.0, input_dim.2),
             output_dim: get_output_dim(input_dim, padding, kernel_size, dilatation_rate, strides,
             filters),
             strides,
@@ -65,12 +65,12 @@ impl Layer for Conv2D {
 
     fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, LayerError> {
         let input_padded = add_padding(input, &self.padding);
-        let (output_height, output_width, output_depth) = self.output_dim;
+        let (output_height, output_width, output_channel_size) = self.output_dim;
         let mut output = Array::zeros((output_height,
-                                       output_width, output_depth));
+                                       output_width, output_channel_size));
 
         let input_padded_shape = input_padded.shape();
-        let input_padded_depth = input_padded_shape[2];
+        let input_padded_channel_size = input_padded_shape[2];
 
         // TODO: Dilation and stride are not being considered now
         Zip::indexed(output.view_mut()).par_for_each(|(row, col, feature), value| {
@@ -79,13 +79,10 @@ impl Layer for Conv2D {
             let kernel = &self.kernels[feature];
 
             let input_slice = input_padded.slice(
-                s!(row..max_row, col..max_col, 0..input_padded_depth)
+                s!(row..max_row, col..max_col, 0..input_padded_channel_size)
             );
 
-            let output_cel = input_slice.axis_iter(Axis(2)).into_par_iter().map(|input_slice_slice| {
-                println!("{:?}", input_slice_slice);
-                kernel.mul(&input_slice_slice).sum()
-            }).sum::<f32>();
+            let output_cel = kernel.mul(&input_slice).sum();
 
             *value = match self.activation_function {
                 ActivationFunctionType::Relu => relu(&output_cel),
@@ -100,13 +97,13 @@ impl Layer for Conv2D {
         Ok(output)
     }
 }
-fn populate_kernels_with_random(kernel_size: usize, filters: usize)
+fn populate_kernels_with_random(kernel_size: usize, filters: usize, channels: usize)
                                 -> Vec<Array<f32, Ix3>> {
     let mut kernels = Vec::with_capacity(kernel_size);
 
     let mut i: usize = filters;
     while i >= 1 {
-        let initial_filter = Array::random((1, kernel_size, kernel_size),
+        let initial_filter = Array::random((kernel_size, kernel_size, channels),
                                            Uniform::new(-1.0, 1.0));
         kernels.push(initial_filter);
         i -= 1;
