@@ -1,10 +1,9 @@
 use std::ops::Mul;
-use ndarray::{Array, Axis, Ix3, s, Zip};
+use ndarray::{Array, Ix3, s, Zip};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
-use rayon::iter::IntoParallelIterator;
 use rayon::iter::ParallelIterator;
-use crate::activation::{ActivationFunctionType, leaky_relu, relu, sigmoid, tanh};
+use crate::activation::{ActivationFunctionType, leaky_relu, relu, sigmoid, softmax, tanh};
 use crate::layer::{Layer, LayerError, LayerType};
 use crate::layer::util::{add_padding};
 
@@ -65,12 +64,10 @@ impl Layer for Conv2D {
 
     fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, LayerError> {
         let input_padded = add_padding(input, &self.padding);
-        let (output_height, output_width, output_channel_size) = self.output_dim;
-        let mut output = Array::zeros((output_height,
-                                       output_width, output_channel_size));
+        let mut output = Array::zeros((self.output_dim.0,
+                                       self.output_dim.1, self.output_dim.2));
 
-        let input_padded_shape = input_padded.shape();
-        let input_padded_channel_size = input_padded_shape[2];
+        let input_padded_channel_size = input_padded.shape()[2];
 
         // TODO: Dilation and stride are not being considered now
         Zip::indexed(output.view_mut()).par_for_each(|(row, col, feature), value| {
@@ -82,6 +79,11 @@ impl Layer for Conv2D {
                 s!(row..max_row, col..max_col, 0..input_padded_channel_size)
             );
 
+            /*let output_cel = Zip::from(kernel).and(&input_slice).par_fold(
+                || 0.,
+                |sum, kernel_elem, input_elem| sum + kernel_elem * input_elem,
+                |sum, other_sum| sum + other_sum
+            );*/
             let output_cel = kernel.mul(&input_slice).sum();
 
             *value = match self.activation_function {
@@ -89,7 +91,8 @@ impl Layer for Conv2D {
                 ActivationFunctionType::Sigmoid => sigmoid(&output_cel),
                 ActivationFunctionType::LeakyRelu => leaky_relu(&output_cel, None),
                 ActivationFunctionType::Tanh => tanh(&output_cel),
-                // ActivationFunctionType::Softmax => softmax(&partial_result),
+                // TODO: enable softmax for Conv2D
+                // ActivationFunctionType::Softmax => softmax(&output_celt),
                 _ => output_cel,
             };
         });

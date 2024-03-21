@@ -1,4 +1,3 @@
-use std::time::Instant;
 use ndarray::{Array, Ix3};
 use crate::layer::{Layer};
 use crate::model::Model;
@@ -39,11 +38,8 @@ impl Model for Sequential {
 
     fn forward(&self, input: &Array<f32, Ix3>) -> Array<f32, Ix3> {
         let mut result = input.clone();
-        for (index, layer) in self.layers.iter().enumerate() {
-            let start = Instant::now();
+        for layer in self.layers.iter() {
             result = layer.forward(&result).unwrap();
-            let duration = start.elapsed();
-            println!("{} layer spent {:?}", self.layer_names[index], duration);
 
         }
         return result
