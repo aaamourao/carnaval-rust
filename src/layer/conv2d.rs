@@ -1,13 +1,14 @@
-use std::ops::Mul;
-use ndarray::{Array, Ix3, s, Zip};
+use crate::activation::{leaky_relu, relu, sigmoid, tanh, ActivationFunctionType};
+use crate::layer::util::add_padding;
+use ndarray::{s, Array, Ix3, Zip};
 use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
-use rayon::iter::ParallelIterator;
-use crate::activation::{ActivationFunctionType, leaky_relu, relu, sigmoid, softmax, tanh};
-use crate::layer::{Layer, LayerError, LayerType};
-use crate::layer::util::{add_padding};
+//use rayon::iter::ParallelIterator;
+use std::error::Error;
+use std::fmt;
+use std::ops::Mul;
 
-pub struct Conv2D {
+pub struct Conv2dLayer {
     filters: usize,
     kernel_size: usize,
     kernels: Vec<Array<f32, Ix3>>,
@@ -19,53 +20,57 @@ pub struct Conv2D {
     activation_function: ActivationFunctionType,
 }
 
-impl Conv2D {
-    pub fn new(filters: usize,
-               kernel_size: usize,
-               input_dim: (usize, usize, usize),
-               padding: Option<(usize, usize)>,
-               strides: Option<(usize, usize)>,
-               dilation_rate: Option<(usize, usize)>,
-               activation_function_type: Option<ActivationFunctionType>) -> Self {
+impl Conv2dLayer {
+    pub fn new(
+        filters: usize,
+        kernel_size: usize,
+        input_dim: (usize, usize, usize),
+        padding: Option<(usize, usize)>,
+        strides: Option<(usize, usize)>,
+        dilation_rate: Option<(usize, usize)>,
+        activation_function_type: Option<ActivationFunctionType>,
+    ) -> Result<Self, Box<dyn Error>> {
         // TODO: kernel_size is not the only parameter that should be checked
         if kernel_size < 1 {
-            panic!["kernel_size should be at least 1"];
+            return Err(Box::new(KernelSizeError));
         }
 
         let padding = padding.unwrap_or((0, 0));
         let dilatation_rate = dilation_rate.unwrap_or((1, 1));
         let strides = strides.unwrap_or((1, 1));
-        let activation_function =
-            activation_function_type.unwrap_or(ActivationFunctionType::None);
+        let activation_function = activation_function_type.unwrap_or(ActivationFunctionType::None);
 
-        Conv2D {
+        Ok(Self {
             filters,
             kernel_size,
             kernels: populate_kernels_with_random(kernel_size, filters, input_dim.2),
             padding,
-            input_dim: (input_dim.0 + padding.0, input_dim.1 + padding.0, input_dim.2),
-            output_dim: get_output_dim(input_dim, padding, kernel_size, dilatation_rate, strides,
-            filters),
+            input_dim: (
+                input_dim.0 + padding.0,
+                input_dim.1 + padding.0,
+                input_dim.2,
+            ),
+            output_dim: get_output_dim(
+                input_dim,
+                padding,
+                kernel_size,
+                dilatation_rate,
+                strides,
+                filters,
+            ),
             strides,
             dilatation_rate,
             activation_function,
-        }
-    }
-}
-
-impl Layer for Conv2D {
-    fn get_layer_type(&self) -> LayerType {
-        LayerType::Conv2D
+        })
     }
 
-    fn get_activation_function(&self) -> ActivationFunctionType {
+    pub fn activation_function(&self) -> ActivationFunctionType {
         self.activation_function
     }
 
-    fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, LayerError> {
+    pub fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, Box<dyn Error>> {
         let input_padded = add_padding(input, &self.padding);
-        let mut output = Array::zeros((self.output_dim.0,
-                                       self.output_dim.1, self.output_dim.2));
+        let mut output = Array::zeros((self.output_dim.0, self.output_dim.1, self.output_dim.2));
 
         let input_padded_channel_size = input_padded.shape()[2];
 
@@ -75,9 +80,8 @@ impl Layer for Conv2D {
             let max_col = col + self.kernel_size;
             let kernel = &self.kernels[feature];
 
-            let input_slice = input_padded.slice(
-                s!(row..max_row, col..max_col, 0..input_padded_channel_size)
-            );
+            let input_slice =
+                input_padded.slice(s!(row..max_row, col..max_col, 0..input_padded_channel_size));
 
             /*let output_cel = Zip::from(kernel).and(&input_slice).par_fold(
                 || 0.,
@@ -100,35 +104,61 @@ impl Layer for Conv2D {
         Ok(output)
     }
 }
-fn populate_kernels_with_random(kernel_size: usize, filters: usize, channels: usize)
-                                -> Vec<Array<f32, Ix3>> {
+
+fn populate_kernels_with_random(
+    kernel_size: usize,
+    filters: usize,
+    channels: usize,
+) -> Vec<Array<f32, Ix3>> {
     let mut kernels = Vec::with_capacity(kernel_size);
 
     let mut i: usize = filters;
     while i >= 1 {
-        let initial_filter = Array::random((kernel_size, kernel_size, channels),
-                                           Uniform::new(-1.0, 1.0));
+        let initial_filter = Array::random(
+            (kernel_size, kernel_size, channels),
+            Uniform::new(-1.0, 1.0),
+        );
         kernels.push(initial_filter);
         i -= 1;
     }
 
-    return kernels
+    return kernels;
 }
-pub fn get_output_dim(input_dim: (usize, usize, usize),
-                      padding: (usize, usize),
-                      kernel_size: usize,
-                      dilatation_rate: (usize, usize),
-                      strides: (usize, usize),
-                      filters: usize) -> (usize, usize, usize) {
+
+pub fn get_output_dim(
+    input_dim: (usize, usize, usize),
+    padding: (usize, usize),
+    kernel_size: usize,
+    dilatation_rate: (usize, usize),
+    strides: (usize, usize),
+    filters: usize,
+) -> (usize, usize, usize) {
     let (input_height, input_width, _) = input_dim;
     let (padding_height, padding_width) = padding;
     let (dilatation_height, dilatation_width) = dilatation_rate;
     let (stride_height, stride_width) = strides;
 
-    let height = 1 + (input_height + 2 * padding_height - kernel_size - (kernel_size - 1)
-        * (dilatation_height - 1)) / stride_height;
-    let width = 1 + (input_width + 2 * padding_width - kernel_size - (kernel_size - 1)
-        * (dilatation_width - 1)) / stride_width;
+    let height = 1
+        + (input_height + 2 * padding_height
+            - kernel_size
+            - (kernel_size - 1) * (dilatation_height - 1))
+            / stride_height;
+    let width = 1
+        + (input_width + 2 * padding_width
+            - kernel_size
+            - (kernel_size - 1) * (dilatation_width - 1))
+            / stride_width;
 
     (height, width, filters)
+}
+
+#[derive(Debug)]
+pub struct KernelSizeError;
+
+impl Error for KernelSizeError {}
+
+impl fmt::Display for KernelSizeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Kernel size is invalid")
+    }
 }

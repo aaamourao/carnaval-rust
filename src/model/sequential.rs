@@ -1,47 +1,49 @@
-use ndarray::{Array, Ix3};
-use crate::layer::{Layer};
-use crate::model::Model;
+use std::error::Error;
 
-pub struct Sequential {
-    layers: Vec<Box<dyn Layer>>,
+use crate::layer::Layer;
+use ndarray::{Array, Ix3};
+
+pub struct SequentialModel {
+    layers: Vec<Layer>,
     layer_names: Vec<String>,
 }
 
-impl Sequential {
+impl SequentialModel {
     pub fn new(layers_size: usize) -> Self {
-        Sequential {
+        SequentialModel {
             layers: Vec::with_capacity(layers_size),
             layer_names: Vec::with_capacity(layers_size),
         }
     }
 
-    pub fn push_layer(&mut self, layer_name: String, layer: Box<dyn Layer>) {
+    pub fn push_layer(&mut self, layer_name: String, layer: Layer) {
         self.layers.push(layer);
         self.layer_names.push(layer_name);
     }
 }
 
-impl Model for Sequential {
-    fn predict(&self, input: &Array<f32, Ix3>) -> Array<f32, Ix3> {
+impl SequentialModel {
+    pub fn predict(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, Box<dyn Error>> {
         let mut current = input.clone();
 
-        for (index, layer) in self.layers.iter().enumerate() {
-            let result = layer.forward(&current);
-            current = current + match result {
+        for (_, layer) in self.layers.iter().enumerate() {
+            let result = match layer.forward(&current) {
                 Ok(forward_result) => forward_result,
-                Err(err) => panic!("Predict Error, Layer {:?}: {:?}", self.layer_names[index], err),
+                Err(err) => {
+                    return Err(err);
+                }
             };
+            current = current + result;
         }
 
-        return current
+        return Ok(current);
     }
 
-    fn forward(&self, input: &Array<f32, Ix3>) -> Array<f32, Ix3> {
+    pub fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, Box<dyn Error>> {
         let mut result = input.clone();
         for layer in self.layers.iter() {
-            result = layer.forward(&result).unwrap();
-
+            result = layer.forward(&result)?;
         }
-        return result
+        return Ok(result);
     }
 }

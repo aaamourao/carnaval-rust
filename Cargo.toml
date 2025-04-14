@@ -7,7 +7,10 @@ edition = "2021"
 
 [dependencies]
 rand = "0.8.5"
-ndarray = { version = "0.15.6", features = ["rayon", "matrixmultiply-threading"] }
+ndarray = { version = "0.15.6", features = [
+    "rayon",
+    "matrixmultiply-threading",
+] }
 ndarray-rand = "0.14.0"
 ndarray-stats = "0.5.1"
 rayon = "1.9.0"
@@ -16,3 +19,14 @@ rayon = "1.9.0"
 more-asserts = "0.3.1"
 plotpy = "0.5.1"
 
+[lints.clippy]
+cloned_instead_of_copied = "deny"
+default_trait_access = "deny"
+ignored_unit_patterns = "deny"
+items_after_statements = "deny"
+manual_is_variant_and = "deny"
+manual_string_new = "deny"
+map_unwrap_or = "deny"
+semicolon_if_nothing_returned = "deny"
+uninlined_format_args = "deny"
+dead-code = "allow"

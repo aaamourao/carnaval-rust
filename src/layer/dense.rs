@@ -1,11 +1,13 @@
-use ndarray::{Array, Axis, Ix3, Zip};
-use ndarray_rand::RandomExt;
-use rayon::iter::ParallelIterator;
-use rand::distributions::Uniform;
-use crate::activation::{ActivationFunctionType, leaky_relu, relu, sigmoid, softmax, tanh};
-use crate::layer::{LayerError, Layer, LayerType};
+use std::error::Error;
+use std::fmt;
 
-pub struct Dense {
+use crate::activation::{leaky_relu, relu, sigmoid, softmax, tanh, ActivationFunctionType};
+use ndarray::{Array, Axis, Ix3};
+use ndarray_rand::RandomExt;
+use rand::distributions::Uniform;
+//use rayon::iter::ParallelIterator;
+
+pub struct DenseLayer {
     pub input_size: usize,
     pub output_size: usize,
     pub weights: Array<f32, Ix3>,
@@ -17,17 +19,16 @@ pub struct Dense {
  * Dense handles 2D data, but its input is Ix3 arrays in order to be compatible with other layers
  * types
  */
-impl Dense {
-    pub fn new(input_size: usize,
-               output_size: usize,
-               activation_function: Option<ActivationFunctionType>) -> Self {
+impl DenseLayer {
+    pub fn new(
+        input_size: usize,
+        output_size: usize,
+        activation_function: Option<ActivationFunctionType>,
+    ) -> Self {
+        let layers = Array::random((input_size, output_size, 1), Uniform::new(-1.0, 1.0));
+        let bias = Array::random((1, output_size, 1), Uniform::new(-10.0, 10.0));
 
-        let layers = Array::random((input_size, output_size, 1),
-                                   Uniform::new(-1.0, 1.0));
-        let bias = Array::random((1, output_size, 1),
-                                 Uniform::new(-10.0, 10.0));
-
-        Dense {
+        DenseLayer {
             input_size,
             output_size,
             weights: layers,
@@ -37,26 +38,20 @@ impl Dense {
     }
 }
 
-impl Layer for Dense {
-    fn get_layer_type(&self) -> LayerType {
-        LayerType::Dense
+impl DenseLayer {
+    pub fn activation_function(&self) -> ActivationFunctionType {
+        return self.activation_function;
     }
 
-    fn get_activation_function(&self) -> ActivationFunctionType {
-        return self.activation_function
-    }
-
-    fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, LayerError> {
+    pub fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, Box<dyn Error>> {
         let result = if input.len_of(Axis(0)) != 1 && input.len_of(Axis(2)) != 1 {
-            Err(LayerError::IncorrectDimensions(
-                "input should have dimensions (1, input_size, 1)".to_string()
-            ))
+            return Err(Box::new(InvalidDimensionsError));
         } else {
-
-            let partial_result = &input.index_axis(Axis(2), 0).dot(
-                &self.weights.index_axis(Axis(2), 0)).to_shape((1, self.output_size, 1)).unwrap()
+            let partial_result = &input
+                .index_axis(Axis(2), 0)
+                .dot(&self.weights.index_axis(Axis(2), 0))
+                .to_shape((1, self.output_size, 1))?
                 + &self.bias;
-
 
             let result = match self.activation_function {
                 ActivationFunctionType::Relu => partial_result.map(|x| relu(x)),
@@ -68,6 +63,17 @@ impl Layer for Dense {
             };
             Ok(result)
         };
-        return result
+        return result;
+    }
+}
+
+#[derive(Debug)]
+pub struct InvalidDimensionsError;
+
+impl Error for InvalidDimensionsError {}
+
+impl fmt::Display for InvalidDimensionsError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Dimensions should match for forwarding")
     }
 }
