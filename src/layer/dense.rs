@@ -1,4 +1,4 @@
-use std::{error::Error, fmt};
+use std::error::Error;
 
 use ndarray::{Array, Axis, Ix3};
 use ndarray_rand::RandomExt;
@@ -45,7 +45,7 @@ impl DenseLayer {
 
     pub fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, Box<dyn Error>> {
         if input.len_of(Axis(0)) != 1 && input.len_of(Axis(2)) != 1 {
-            return Err(Box::new(InvalidDimensionsError));
+            return Err(Box::new(DenseError::InvalidDimensionsError));
         }
         let partial_result = &input
             .index_axis(Axis(2), 0)
@@ -65,13 +65,8 @@ impl DenseLayer {
     }
 }
 
-#[derive(Debug)]
-pub struct InvalidDimensionsError;
-
-impl Error for InvalidDimensionsError {}
-
-impl fmt::Display for InvalidDimensionsError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Dimensions should match for forwarding")
-    }
+#[derive(Debug, thiserror::Error)]
+pub enum DenseError {
+    #[error("Dimensions should match for forwarding")]
+    InvalidDimensionsError,
 }
