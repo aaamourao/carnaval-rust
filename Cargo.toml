@@ -19,6 +19,7 @@ thiserror = "2.0.15"
 [dev-dependencies]
 more-asserts = "0.3.1"
 plotpy = "0.5.1"
+approx = "0.5.1"
 
 [lints.clippy]
 cloned_instead_of_copied = "deny"

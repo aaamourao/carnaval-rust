@@ -5,6 +5,9 @@ pub mod model;
 
 #[cfg(test)]
 mod tests {
+    use std::f32;
+
+    use approx::assert_relative_eq;
     use more_asserts::{assert_ge, assert_le};
     use ndarray::array;
     //use ndarray_rand::RandomExt;
@@ -23,8 +26,9 @@ mod tests {
     fn relu_works() {
         let result = relu(&-2.0);
         let result_bigger_than_0 = relu(&3.0);
-        assert_eq!(result, 0.0);
-        assert_eq!(result_bigger_than_0, 3.0);
+        assert_relative_eq!(result, 0.0, epsilon = f32::EPSILON);
+
+        assert_relative_eq!(result_bigger_than_0, 3.0);
     }
 
     #[test]
@@ -32,9 +36,9 @@ mod tests {
         let result = sigmoid(&0.0);
         let result_6 = sigmoid(&6.0);
         let result_minus_6 = sigmoid(&-6.0);
-        assert_eq!(result, 0.5);
-        assert_eq!(result_6, 0.9975274);
-        assert_eq!(result_minus_6, 0.002472623);
+        assert_relative_eq!(result, 0.5);
+        assert_relative_eq!(result_6, 0.997_527_4);
+        assert_relative_eq!(result_minus_6, 0.002_472_623);
     }
 
     #[test]
@@ -190,6 +194,6 @@ mod tests {
         let result = nn.forward(&input).unwrap();
 
         assert_eq!(result.shape(), [1_usize, 24_usize, 1_usize]);
-        assert_eq!(result[[0, 23, 0]], 23.);
+        assert_relative_eq!(result[[0, 23, 0]], 23.);
     }
 }
