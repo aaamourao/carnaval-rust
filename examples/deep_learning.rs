@@ -81,6 +81,6 @@ fn main() {
     let start_time = Instant::now();
     let result = model.forward(&input);
     let duration = Instant::now() - start_time;
-    println!("CNN inference time spent {:?}", duration);
-    println!("Result: {:?}", result);
+    println!("CNN inference time spent {duration:?}");
+    println!("Result: {result:?}");
 }

@@ -55,10 +55,10 @@ mod tests {
 
         if inference_result.is_ok() {
             for (row, value) in inference_result.as_ref().unwrap().iter().enumerate() {
-                println![
+                println!(
                     "value multiplied by 1.0 + bias({:?}): {value}",
                     nn.bias[[0, row, 0]]
-                ]
+                );
             }
         }
     }
@@ -114,7 +114,7 @@ mod tests {
             [7.5],
             [10.0]
         ]];
-        let y = x.map(|xx| nn.predict(&array![[[xx.clone()]]]).unwrap()[[0, 0, 0]]);
+        let y = x.map(|xx| nn.predict(&array![[[*xx]]]).unwrap()[[0, 0, 0]]);
 
         let mut curve = Curve::new();
         curve.set_label("y = nn.predict(x)");
@@ -140,7 +140,7 @@ mod tests {
         ];
 
         let input_shape = input.shape();
-        println!("{:?}", input_shape);
+        println!("{input_shape:?}");
 
         let nn = Conv2dLayer::new(
             1,
@@ -154,7 +154,7 @@ mod tests {
         .unwrap();
 
         let result = nn.forward(&input).unwrap();
-        println!("{:?}", result);
+        println!("{result:?}");
     }
 
     #[test]
@@ -172,7 +172,7 @@ mod tests {
         assert_eq!(
             result,
             array![[[7.0], [9.0], [11.]], [[19.0], [21.0], [23.]]]
-        )
+        );
     }
 
     #[test]

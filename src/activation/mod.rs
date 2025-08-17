@@ -23,12 +23,12 @@ pub fn relu(x: &f32) -> f32 {
 }
 
 pub fn leaky_relu(x: &f32, alpha: Option<f32>) -> f32 {
-    let leak = alpha.unwrap_or_else(|| 0.1) * x;
+    let leak = alpha.unwrap_or(0.1) * x;
     x.max(leak)
 }
 
 pub fn tanh(x: &f32) -> f32 {
-    x.clone().tanh()
+    x.tanh()
 }
 
 pub fn softmax(x: &Array<f32, Ix3>) -> Array<f32, Ix3> {

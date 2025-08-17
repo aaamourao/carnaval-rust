@@ -40,13 +40,13 @@ impl DenseLayer {
 
 impl DenseLayer {
     pub fn activation_function(&self) -> ActivationFunctionType {
-        return self.activation_function;
+        self.activation_function
     }
 
     pub fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, Box<dyn Error>> {
-        let result = if input.len_of(Axis(0)) != 1 && input.len_of(Axis(2)) != 1 {
+        if input.len_of(Axis(0)) != 1 && input.len_of(Axis(2)) != 1 {
             return Err(Box::new(InvalidDimensionsError));
-        } else {
+        }
             let partial_result = &input
                 .index_axis(Axis(2), 0)
                 .dot(&self.weights.index_axis(Axis(2), 0))
@@ -54,16 +54,15 @@ impl DenseLayer {
                 + &self.bias;
 
             let result = match self.activation_function {
-                ActivationFunctionType::Relu => partial_result.map(|x| relu(x)),
-                ActivationFunctionType::Sigmoid => partial_result.map(|x| sigmoid(x)),
+                ActivationFunctionType::Relu => partial_result.map(relu),
+                ActivationFunctionType::Sigmoid => partial_result.map(sigmoid),
                 ActivationFunctionType::LeakyRelu => partial_result.map(|x| leaky_relu(x, None)),
-                ActivationFunctionType::Tanh => partial_result.map(|x| tanh(x)),
+                ActivationFunctionType::Tanh => partial_result.map(tanh),
                 ActivationFunctionType::Softmax => softmax(&partial_result),
                 ActivationFunctionType::None => partial_result.clone(),
             };
             Ok(result)
-        };
-        return result;
+
     }
 }
 

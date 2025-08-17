@@ -5,7 +5,6 @@ use ndarray_rand::RandomExt;
 use rand::distributions::Uniform;
 //use rayon::iter::ParallelIterator;
 use std::error::Error;
-use std::fmt;
 use std::ops::Mul;
 
 pub struct Conv2dLayer {
@@ -32,7 +31,7 @@ impl Conv2dLayer {
     ) -> Result<Self, Box<dyn Error>> {
         // TODO: kernel_size is not the only parameter that should be checked
         if kernel_size < 1 {
-            return Err(Box::new(KernelSizeError));
+            return Err(Box::new(Conv2dError::KernelSizeError));
         }
 
         let padding = padding.unwrap_or((0, 0));
@@ -122,7 +121,7 @@ fn populate_kernels_with_random(
         i -= 1;
     }
 
-    return kernels;
+    kernels
 }
 
 pub fn get_output_dim(
@@ -152,13 +151,8 @@ pub fn get_output_dim(
     (height, width, filters)
 }
 
-#[derive(Debug)]
-pub struct KernelSizeError;
-
-impl Error for KernelSizeError {}
-
-impl fmt::Display for KernelSizeError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Kernel size is invalid")
-    }
+#[derive(Debug, thiserror::Error)]
+pub enum Conv2dError {
+    #[error("invalid kernel size")]
+    KernelSizeError,
 }

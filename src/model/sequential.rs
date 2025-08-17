@@ -26,7 +26,7 @@ impl SequentialModel {
     pub fn predict(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, Box<dyn Error>> {
         let mut current = input.clone();
 
-        for (_, layer) in self.layers.iter().enumerate() {
+        for layer in self.layers.iter() {
             let result = match layer.forward(&current) {
                 Ok(forward_result) => forward_result,
                 Err(err) => {
@@ -36,7 +36,7 @@ impl SequentialModel {
             current = current + result;
         }
 
-        return Ok(current);
+        Ok(current)
     }
 
     pub fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, Box<dyn Error>> {
@@ -44,6 +44,6 @@ impl SequentialModel {
         for layer in self.layers.iter() {
             result = layer.forward(&result)?;
         }
-        return Ok(result);
+        Ok(result)
     }
 }

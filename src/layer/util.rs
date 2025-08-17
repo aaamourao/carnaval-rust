@@ -13,5 +13,5 @@ pub fn add_padding(input: &Array<f32, Ix3>, padding: &(usize, usize)) -> Array<f
     input_padded.slice_mut(s![0..input_channel_size,
         padding.0..input_height, padding.1..input_width]).assign(input);
 
-    return input_padded
+    input_padded
 }

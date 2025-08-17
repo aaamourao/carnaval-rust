@@ -55,11 +55,9 @@ impl MaxPool2dLayer {
 
         let mut output = Array::zeros((output_height, output_width, output_feature_size));
 
-        let mut output_row = 0;
-        for row in (0..(input_padded_height - self.pool_size.0 + 1)).step_by(self.pool_size.0) {
+        for (output_row, row) in (0..(input_padded_height - self.pool_size.0 + 1)).step_by(self.pool_size.0).enumerate() {
             let max_row = row + self.pool_size.0;
-            let mut output_col = 0;
-            for col in (0..(input_padded_width - self.pool_size.1 + 1)).step_by(self.pool_size.1) {
+            for (output_col, col) in (0..(input_padded_width - self.pool_size.1 + 1)).step_by(self.pool_size.1).enumerate() {
                 let max_col = col + self.pool_size.1;
                 for feature in 0..input_padded_feature_size {
                     let max_feature = feature + 1;
@@ -68,11 +66,8 @@ impl MaxPool2dLayer {
                     output[[output_row, output_col, feature]] =
                         *input_slice.index_axis(Axis(2), 0).max()?;
                 }
-                output_col += 1;
             }
-            output_row += 1;
         }
-
         Ok(output)
     }
 }
