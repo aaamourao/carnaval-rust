@@ -1,4 +1,4 @@
-use ndarray::{Array, Ix3, s};
+use ndarray::{s, Array, Ix3};
 
 pub fn add_padding(input: &Array<f32, Ix3>, padding: &(usize, usize)) -> Array<f32, Ix3> {
     let input_shape = input.shape();
@@ -6,12 +6,19 @@ pub fn add_padding(input: &Array<f32, Ix3>, padding: &(usize, usize)) -> Array<f
     let input_height = input_shape[1];
     let input_width = input_shape[2];
 
+    let mut input_padded = Array::zeros((
+        input_channel_size,
+        input_height + padding.0,
+        input_width + padding.1,
+    ));
 
-    let mut input_padded = Array::zeros((input_channel_size,
-                                         input_height + padding.0, input_width + padding.1));
-
-    input_padded.slice_mut(s![0..input_channel_size,
-        padding.0..input_height, padding.1..input_width]).assign(input);
+    input_padded
+        .slice_mut(s![
+            0..input_channel_size,
+            padding.0..input_height,
+            padding.1..input_width
+        ])
+        .assign(input);
 
     input_padded
 }

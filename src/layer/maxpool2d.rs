@@ -1,9 +1,9 @@
 use std::error::Error;
 
-use crate::activation::ActivationFunctionType;
-use crate::layer::util::add_padding;
 use ndarray::{s, Array, Axis, Ix3};
 use ndarray_stats::QuantileExt;
+
+use crate::{activation::ActivationFunctionType, layer::util::add_padding};
 
 pub struct MaxPool2dLayer {
     pub pool_size: (usize, usize),
@@ -55,9 +55,15 @@ impl MaxPool2dLayer {
 
         let mut output = Array::zeros((output_height, output_width, output_feature_size));
 
-        for (output_row, row) in (0..(input_padded_height - self.pool_size.0 + 1)).step_by(self.pool_size.0).enumerate() {
+        for (output_row, row) in (0..=input_padded_height - self.pool_size.0)
+            .step_by(self.pool_size.0)
+            .enumerate()
+        {
             let max_row = row + self.pool_size.0;
-            for (output_col, col) in (0..(input_padded_width - self.pool_size.1 + 1)).step_by(self.pool_size.1).enumerate() {
+            for (output_col, col) in (0..=input_padded_width - self.pool_size.1)
+                .step_by(self.pool_size.1)
+                .enumerate()
+            {
                 let max_col = col + self.pool_size.1;
                 for feature in 0..input_padded_feature_size {
                     let max_feature = feature + 1;

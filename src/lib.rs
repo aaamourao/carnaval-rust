@@ -5,17 +5,19 @@ pub mod model;
 
 #[cfg(test)]
 mod tests {
-    use crate::activation::{relu, sigmoid, ActivationFunctionType};
-    use crate::layer::conv2d::Conv2dLayer;
-    use crate::layer::dense::DenseLayer;
-    use crate::layer::flatten::FlattenLayer;
-    use crate::layer::maxpool2d::MaxPool2dLayer;
-    use crate::layer::Layer;
-    use crate::model::sequential::SequentialModel;
     use more_asserts::{assert_ge, assert_le};
     use ndarray::array;
     //use ndarray_rand::RandomExt;
     use plotpy::{Curve, Plot};
+
+    use crate::{
+        activation::{relu, sigmoid, ActivationFunctionType},
+        layer::{
+            conv2d::Conv2dLayer, dense::DenseLayer, flatten::FlattenLayer,
+            maxpool2d::MaxPool2dLayer, Layer,
+        },
+        model::sequential::SequentialModel,
+    };
 
     #[test]
     fn relu_works() {
@@ -39,7 +41,7 @@ mod tests {
     fn dense_works() {
         let nn = DenseLayer::new(2, 1, None);
         assert_eq!(nn.activation_function(), ActivationFunctionType::None);
-        for weight in nn.weights.iter() {
+        for weight in &nn.weights {
             assert_le!(weight, &1.0_f32);
             assert_ge!(weight, &-1.0_f32);
         }
@@ -72,9 +74,8 @@ mod tests {
 
         let x = array![[[2.0], [4.0], [6.0], [8.0], [10.0]]];
         let y_result = &nn.forward(&x);
-        let y = match y_result {
-            Ok(result) => result,
-            _ => panic!["Forward returned error"],
+        let Ok(y) = y_result else {
+            panic!("Forward returned error")
         };
 
         let mut curve = Curve::new();

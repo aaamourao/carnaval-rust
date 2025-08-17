@@ -1,11 +1,12 @@
 use std::error::Error;
 
-use crate::activation::ActivationFunctionType;
 use conv2d::Conv2dLayer;
 use dense::DenseLayer;
 use flatten::FlattenLayer;
 use maxpool2d::MaxPool2dLayer;
 use ndarray::{Array, Ix3};
+
+use crate::activation::ActivationFunctionType;
 
 pub mod conv2d;
 pub mod dense;

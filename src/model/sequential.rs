@@ -1,7 +1,8 @@
 use std::error::Error;
 
-use crate::layer::Layer;
 use ndarray::{Array, Ix3};
+
+use crate::layer::Layer;
 
 pub struct SequentialModel {
     layers: Vec<Layer>,
@@ -26,7 +27,7 @@ impl SequentialModel {
     pub fn predict(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, Box<dyn Error>> {
         let mut current = input.clone();
 
-        for layer in self.layers.iter() {
+        for layer in &self.layers {
             let result = match layer.forward(&current) {
                 Ok(forward_result) => forward_result,
                 Err(err) => {
@@ -41,7 +42,7 @@ impl SequentialModel {
 
     pub fn forward(&self, input: &Array<f32, Ix3>) -> Result<Array<f32, Ix3>, Box<dyn Error>> {
         let mut result = input.clone();
-        for layer in self.layers.iter() {
+        for layer in &self.layers {
             result = layer.forward(&result)?;
         }
         Ok(result)

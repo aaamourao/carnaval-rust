@@ -1,7 +1,8 @@
 use std::error::Error;
 
-use crate::activation::ActivationFunctionType;
 use ndarray::{Array, Ix3};
+
+use crate::activation::ActivationFunctionType;
 
 #[derive(Debug, Default)]
 pub struct FlattenLayer;

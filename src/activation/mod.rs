@@ -1,7 +1,8 @@
 // activation functions
 
-use ndarray::{Array, Ix3};
 use std::f32;
+
+use ndarray::{Array, Ix3};
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum ActivationFunctionType {

@@ -1,11 +1,15 @@
-use crate::activation::{leaky_relu, relu, sigmoid, tanh, ActivationFunctionType};
-use crate::layer::util::add_padding;
-use ndarray::{s, Array, Ix3, Zip};
-use ndarray_rand::RandomExt;
-use rand::distributions::Uniform;
 //use rayon::iter::ParallelIterator;
 use std::error::Error;
 use std::ops::Mul;
+
+use ndarray::{s, Array, Ix3, Zip};
+use ndarray_rand::RandomExt;
+use rand::distributions::Uniform;
+
+use crate::{
+    activation::{leaky_relu, relu, sigmoid, tanh, ActivationFunctionType},
+    layer::util::add_padding,
+};
 
 pub struct Conv2dLayer {
     filters: usize,
